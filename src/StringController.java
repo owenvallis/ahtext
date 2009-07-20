@@ -64,7 +64,7 @@ public class StringController {
 			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
 		} else {
 			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
-			String spaces = "   ";
+			String spaces = "      ";
 			passer = spaces.concat(passer);
 			stringPasserStringNumTemp = stringPasserStringNum;
 		}
