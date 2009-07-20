@@ -11,7 +11,7 @@ final public class MediaDatabase {
 	FilenameFilter filterTxt = new TXTFilter(); //data filter types
 	FilenameFilter filterWav = new WAVFilter();
 	
-	File directory = new File("src/data/media"); //set data folder path
+	File directory = new File("data/media"); //set data folder path
 
 	// <------------------Setup Class Methods------------------>//
 	////
