@@ -82,8 +82,8 @@ public class AhText extends PApplet {
 		fill(255, 255, 255, 200);
 		rect(0, 0, width, height);
 		noStroke();
-/*
- * 
+
+
 		if (flagIncrement != numberOfColumns) {
 			flagIncrement = 0;
 
@@ -101,12 +101,13 @@ public class AhText extends PApplet {
 				row[i].pushChar();
 			}
 		}
-*/	
+ 
+ /*	
 		for (int i = 0; i < numberOfRows; i++) {
 			row[i].display();
 			row[i].pushChar();
 		}
-		
+*/		
 
 	}
 
