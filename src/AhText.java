@@ -6,7 +6,6 @@ import fullscreen.*;
 public class AhText extends PApplet {
 
 	/**
-	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
