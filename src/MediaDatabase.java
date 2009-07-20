@@ -14,7 +14,7 @@ final public class MediaDatabase {
 	File directory = new File("src/data/media"); //set data folder path
 
 	// <------------------Setup Class Methods------------------>//
-	//
+	////
 	
 	MediaDatabase(){
 		readTextFiles();		
