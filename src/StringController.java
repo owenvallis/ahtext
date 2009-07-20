@@ -112,16 +112,12 @@ public class StringController {
 					posA++;
 					int leftOffset = (int)(numElements/2);
 					System.arraycopy(row[i].characterArray, 0, row[i].characterArray, leftOffset+1, (row[i].characterArray.length-(numElements+1)));
-					for(n = 0; n < (leftOffset); n++){
-					row[i].characterArray[n] = (char)(r.nextInt(80)+229);
+					for(n = 0; n <= (leftOffset); n++){
+					row[i].characterArray[n] = (char)47;
 					}
-					row[i].characterArray[n] = (char)32;
 					numElements -= leftOffset;
-					row[i].characterArray[posA+leftOffset] = (char)32;
-					numElements--;
-					posA++;
 					 while(numElements >= 0){
-						row[i].characterArray[posA+leftOffset] = (char)(r.nextInt(80)+229);
+						row[i].characterArray[posA+leftOffset] = (char)92;
 						numElements--;
 						posA++;
 					}
