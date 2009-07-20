@@ -4,9 +4,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/fullscreen/library/fullscreen_GLsupport.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/fullscreen/library/fullscreen.jar"/>
-	<classpathentry kind="lib" path="core.jar"/>
-	<classpathentry kind="lib" path="fullscreen_GLsupport.jar"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="fullscreen.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
