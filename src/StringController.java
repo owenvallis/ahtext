@@ -63,10 +63,10 @@ public class StringController {
 	String stringPasser() {
 		int resultArrayListPos = stringPasserStringNum%result.size();
 		String passer = null;
-		if (stringPasserStringNumTemp == resultArrayListPos) {
-			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
-		} else{
-			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
+		if (stringPasserStringNumTemp == stringPasserStringNum) {
+			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
+		} else {
+			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
 			String spaces = "      ";
 			passer = spaces.concat(passer);
 			stringPasserStringNumTemp = resultArrayListPos;
