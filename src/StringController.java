@@ -50,31 +50,36 @@ public class StringController {
 		int x = 0;
 
 		while (totalNumOfChars > 0) {
+			x = (x%mediaDatabase.mediaListOuter.size());
+			//System.out.println(x);
 			totalNumOfChars = totalNumOfChars - ((String) mediaDatabase.mediaListOuter.get(x).get(0)).length();
 			result.add(((String) mediaDatabase.mediaListOuter.get(x).get(0)).split(" "));
+			//System.out.println(result.size());
 			x++;
 		}
 
 	}
 
 	String stringPasser() {
-
+		int resultArrayListPos = stringPasserStringNum%result.size();
 		String passer = null;
-		if (stringPasserStringNumTemp == stringPasserStringNum) {
-			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
-		} else {
-			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
-			String spaces = "   ";
+		if (stringPasserStringNumTemp == resultArrayListPos) {
+			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
+		} else{
+			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
+			String spaces = "      ";
 			passer = spaces.concat(passer);
-			stringPasserStringNumTemp = stringPasserStringNum;
+			stringPasserStringNumTemp = resultArrayListPos;
 		}
-
-		if (stringPasserArrayPos < (result.get(stringPasserStringNum).length - 1)) {
+		
+		System.out.println(resultArrayListPos);
+		if (stringPasserArrayPos < (result.get(stringPasserStringNum).length-1)) {
 			stringPasserArrayPos++;
 		} else {
-			stringPasserStringNum++;
+			resultArrayListPos++;
 			stringPasserArrayPos = 0;
 		}
+		
 		//passer = passer.toUpperCase(); //to turn all text to CAPS
 		return passer;
 
