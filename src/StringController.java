@@ -61,22 +61,22 @@ public class StringController {
 	}
 
 	String stringPasser() {
-		int resultArrayListPos = stringPasserStringNum%result.size();
+		stringPasserStringNum = stringPasserStringNum%result.size();
 		String passer = null;
-		if (stringPasserStringNumTemp == resultArrayListPos) {
-			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
+		if (stringPasserStringNumTemp == stringPasserStringNum) {
+			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
 		} else{
-			passer = result.get(resultArrayListPos)[stringPasserArrayPos];
+			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
 			String spaces = "      ";
 			passer = spaces.concat(passer);
-			stringPasserStringNumTemp = resultArrayListPos;
+			stringPasserStringNumTemp = stringPasserStringNum;
 		}
 		
-		System.out.println(resultArrayListPos);
+		System.out.println(stringPasserStringNum);
 		if (stringPasserArrayPos < (result.get(stringPasserStringNum).length-1)) {
 			stringPasserArrayPos++;
 		} else {
-			resultArrayListPos++;
+			stringPasserStringNum++;
 			stringPasserArrayPos = 0;
 		}
 		
