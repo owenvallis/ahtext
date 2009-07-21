@@ -61,7 +61,7 @@ public class StringController {
 	}
 
 	String stringPasser() {
-		//modulo wrap
+		//modulo wrap for the result array
 		stringPasserStringNum = stringPasserStringNum%result.size();
 		String passer = null;
 		if (stringPasserStringNumTemp == stringPasserStringNum) {
