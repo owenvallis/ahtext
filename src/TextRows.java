@@ -1,19 +1,25 @@
 import processing.core.PApplet;
+import java.util.Random;
 
 public class TextRows {
 
 	private int fillPos;
 	private int charPosX;
 	private int columns;
-	private int x = 0;
+	private int x;
 	private int direction;
 	private float fillRate;
+	private float fadeRate;
+	private float charAlphaValue;
 	private float boundHeight;
 	private float boundWidth;
+	int flag;
+	int alphaFlag;
 	PApplet parent; // The parent PApplet that we will render ourselves onto
 
 	char[] characterArray;
 	char[] randCharacterArray;
+	Random r = new Random();
 
 	TextDatabase txdb = new TextDatabase();
 
@@ -46,16 +52,37 @@ public class TextRows {
 		
 		characterArray = new char[columns];
 		direction = (int) parent.random(1, 10);
-		fillRate = parent.random(1, 5);
+		fillRate = parent.random(1,3);
+		fadeRate = ((r.nextFloat()*15)+5);
 
 		randomCharFill();
 
 	}
 
-	void display() {
+	void displayFilledLine() {
 		randomCharFill();
 		stringCharFill();
-
+		pushChar();
+		if(fillPos == columns){
+			flag = 1;
+		}
+	}
+	
+	void displayCharFade(){
+		char letter;
+		charAlphaValue += fadeRate;
+		for(int i = 0; i < columns; i++){
+		parent.fill(charAlphaValue);	
+		letter = characterArray[i];	
+		parent.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
+		}
+		System.out.println(charAlphaValue);
+		System.out.println(fadeRate);
+		System.out.println(" ");
+		if(charAlphaValue > 280){
+			alphaFlag = 1;
+		}
+		
 	}
 
 	void randomCharFill() {
@@ -79,8 +106,7 @@ public class TextRows {
 			for (int i = 0; i < fillPos; i++) {
 				parent.fill(0);
 				letter = characterArray[i];
-				parent.text(letter,
-						(float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight); 
+				parent.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight); 
 			}
 			for (int i = columns; i > fillPos; i--) {
 				parent.fill(parent.random(255));
@@ -101,6 +127,7 @@ public class TextRows {
 				letter = characterArray[i - 1];
 				parent.text(letter,
 						(float) (i * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
+
 			}
 		}
 
@@ -116,6 +143,23 @@ public class TextRows {
 			x = 0;
 		}
 		x++;
+	}
+	
+	void resetValues(){
+		fillPos = 0;
+		x = 0;
+		direction = 0;
+		fillRate = 0;
+		fadeRate = 0;
+		charAlphaValue = 0;
+		flag = 0;
+		alphaFlag = 0;
+		
+		direction = (int) parent.random(1, 10);
+		fillRate = parent.random(1, 5);
+		fadeRate = (r.nextInt(4)+1);
+
+		randomCharFill();
 	}
 
 }
