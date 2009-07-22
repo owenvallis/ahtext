@@ -73,22 +73,21 @@ public class StringController {
 			stringPasserStringNumTemp = stringPasserStringNum;
 		}
 		
-		System.out.println(stringPasserStringNum);
+		
 		if (stringPasserArrayPos < (result.get(stringPasserStringNum).length-1)) {
 			stringPasserArrayPos++;
 		} else {
 			stringPasserStringNum++;
 			stringPasserArrayPos = 0;
 		}
-		
-		//passer = passer.toUpperCase(); //to turn all text to CAPS
+
 		return passer;
 
 	}
 
 	void fillRows() {
-
 		for (int i = 0; i < numOfRows; i++) {
+			stringPasserArrayPos = 0;  //not the right way to fix this. should be taken care of in the stringPasser function :(
 			int posA = 0;
 			int posC = 0;
 			int n = 0; 

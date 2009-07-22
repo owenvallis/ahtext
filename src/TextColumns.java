@@ -9,7 +9,7 @@ public class TextColumns {
 	private int y = 1;
 	private float boundHeight;
 	private float boundWidth;
-	int flag = 0;
+	int flag;
 	PApplet parent; // The parent PApplet that we will render ourselves onto
 
 
@@ -71,6 +71,16 @@ public class TextColumns {
 			x=0;
 		}
 		x++;
+	}
+	
+	void resetValues(){
+		
+		fallRate = 0;
+		x = 0;
+		y = 1;
+		flag = 0;
+		
+		fallRate = parent.random(1, 10);
 	}
 
 }
