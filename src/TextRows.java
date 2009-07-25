@@ -76,9 +76,6 @@ public class TextRows {
 		letter = characterArray[i];	
 		parent.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
 		}
-		System.out.println(charAlphaValue);
-		System.out.println(fadeRate);
-		System.out.println(" ");
 		if(charAlphaValue > 280){
 			alphaFlag = 1;
 		}

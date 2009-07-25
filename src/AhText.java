@@ -127,7 +127,9 @@ public class AhText extends PApplet {
 					}
 					flagFall = 0;
 					flagChar = 0;
-					flagAlpha = 0;				
+					flagAlpha = 0;
+					stringController.numStringToUse();
+					stringController.fillRows();
 				}
 			}				
 		}
