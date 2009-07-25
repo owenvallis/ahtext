@@ -5,7 +5,6 @@ public class StringController {
 
 	private int numOfRows;
 	private int numOfElements;
-	int stringCtrlFlag;
 	private int totalNumOfChars;
 	private int stringPasserStringNum; // to keep track of which String were
 	// using from the MediaDatabase
@@ -36,26 +35,18 @@ public class StringController {
 		numStringToUse();
 		fillRows();
 
-		stringCtrlFlag = 1;
 
-	}
-
-	void setStringCtrlFlagToZero() {
-		stringCtrlFlag = 0;
 	}
 
 	void numStringToUse() {
-
+		result.clear();
 		totalNumOfChars = numOfRows * numOfElements;
 		int x = 0;
-
+		
 		while (totalNumOfChars > 0) {
-			x = (x%mediaDatabase.mediaListOuter.size());
-			//System.out.println(x);
+			x = (r.nextInt(mediaDatabase.mediaListOuter.size()));
 			totalNumOfChars = totalNumOfChars - ((String) mediaDatabase.mediaListOuter.get(x).get(0)).length();
 			result.add(((String) mediaDatabase.mediaListOuter.get(x).get(0)).split(" "));
-			//System.out.println(result.size());
-			x++;
 		}
 
 	}
@@ -68,7 +59,7 @@ public class StringController {
 			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
 		} else {
 			passer = result.get(stringPasserStringNum)[stringPasserArrayPos];
-			String spaces = "      ";
+			String spaces = "    ";
 			passer = spaces.concat(passer);
 			stringPasserStringNumTemp = stringPasserStringNum;
 		}
@@ -87,7 +78,7 @@ public class StringController {
 
 	void fillRows() {
 		for (int i = 0; i < numOfRows; i++) {
-			stringPasserArrayPos = 0;  //not the right way to fix this. should be taken care of in the stringPasser function :(
+			//stringPasserArrayPos = 0;  //not the right way to fix this. should be taken care of in the stringPasser function :(
 			int posA = 0;
 			int posC = 0;
 			int n = 0; 
