@@ -6,12 +6,9 @@ public class StringController {
 	private int numOfRows;
 	private int numOfElements;
 	private int totalNumOfChars;
-	private int stringPasserStringNum; // to keep track of which String were
-	// using from the MediaDatabase
+	private int stringPasserStringNum; // to keep track of which String we're using from the MediaDatabase
 	private int stringPasserStringNumTemp; // temp flag
-	private int stringPasserArrayPos; // to keep track of which parsed string
-	// were using from the original unparsed
-	// string
+	private int stringPasserArrayPos; // to keep track of which parsed string we're using from the original unparsed string
 	Random r = new Random();
 	MediaDatabase mediaDatabase;
 	ArrayList<String[]> result = new ArrayList<String[]>();
@@ -77,48 +74,59 @@ public class StringController {
 	}
 
 	void fillRows() {
+		int posA;
+		int posC;
+		int n; 
+		int numElements;
+		int numChar;
+		int leftOffset;
+		boolean stringUsed = true;
+		String temp = null;
+		
 		for (int i = 0; i < numOfRows; i++) {
-			//stringPasserArrayPos = 0;  //not the right way to fix this. should be taken care of in the stringPasser function :(
-			int posA = 0;
-			int posC = 0;
-			int n = 0; 
-			int numElements = numOfElements;
+			posA = 0;
+			posC = 0;
+			n = 0; 
+			numElements = numOfElements;
 			
-			while (numElements > 0) {
-				String temp = stringPasser();
-				int numChar = (temp.length() + 1);
-				if (numChar <= numElements) {
+			while (numElements > 0) { 									//while the number of unfilled characters in a row is > 0
+				if(stringUsed){											//check to see if the last string fit in the row
+				temp = stringPasser();									//grab the next string
+				}
+				numChar = temp.length();								//find the string's length
+				if ((numChar+1) <= numElements) {						// if the string's length is <= to the number of unfilled characters plus an additional space
 					for(posC = 0; posC < temp.length(); posC++){
 						row[i].characterArray[posA] = temp.charAt(posC);
 						posA++;
 					}
 					row[i].characterArray[posA] = (char) 32;
 					posA++; 
-					numElements = numElements - (temp.length() + 1);
-				} else if ((numChar-1) == numElements) {
+					numElements = numElements - (temp.length() + 1);	//subtract string length + a blank space from the number of unfilled characters
+					stringUsed = true;
+				} else if (numChar == numElements) {					//else if the string's length is the same as the number of unfilled characters
 					for(posC = 0; posC < temp.length(); posC++){
 						row[i].characterArray[posA] = temp.charAt(posC);
 						posA++;
 					}
 					numElements = numElements - temp.length();
-				} else {
-					posA -= 1;
-					row[i].characterArray[posA] = (char)32;
-					numElements--;
-					posA++;
-					int leftOffset = (int)(numElements/2);
-					System.arraycopy(row[i].characterArray, 0, row[i].characterArray, leftOffset+1, (row[i].characterArray.length-(numElements+1)));
-					for(n = 0; n <= (leftOffset); n++){
-					row[i].characterArray[n] = (char)47;
+					stringUsed = true;
+				} else {												//else if the string won't fit, then..
+					leftOffset = (int)(numElements/2);					//divide the remaining unfilled characters in half
+					System.arraycopy(row[i].characterArray, 0, row[i].characterArray, leftOffset, (row[i].characterArray.length-numElements)); //shift the filled characters to the right by the left offset
+					for(n = 0; n < leftOffset; n++){
+					row[i].characterArray[n] = (char)47;				//fill in the left with forward slashes
 					}
 					numElements -= leftOffset;
-					 while(numElements >= 0){
+					 while(numElements > 0){							//if any space is left on the right, then fill with back slashes
 						row[i].characterArray[posA+leftOffset] = (char)92;
 						numElements--;
 						posA++;
 					}
+					stringUsed = false;
 				}
 			}
 		}
+		stringPasserArrayPos = 0;										//Reset Array and String pos variables
+		stringPasserStringNum = 0;
 	}
 }
