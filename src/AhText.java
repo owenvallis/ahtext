@@ -1,5 +1,5 @@
-import processing.core.*;
 import fullscreen.*;
+import processing.core.*;
 
 
 
@@ -14,7 +14,7 @@ public class AhText extends PApplet {
 	 */
 	public static void main(String args[]) {
 
-		PApplet.main(new String[] { "--present", "AhText" });
+		PApplet.main(new String[] {"AhText" });
 
 	}
 
@@ -38,8 +38,9 @@ public class AhText extends PApplet {
 	public void setup() {
 
 		fs = new FullScreen(this);
-		fs.setShortcutsEnabled(false);
+		fs.setShortcutsEnabled(false); 
 		size(screen.width, screen.height, P2D);
+		fs.enter(); 
 		background(255);
 		smooth();
 		noStroke();
@@ -76,8 +77,7 @@ public class AhText extends PApplet {
 
 
 		loop();
-		frameRate(10);
-		fs.enter(); 
+		frameRate(10);		
 	}
 
 	public void draw() {
