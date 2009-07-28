@@ -41,8 +41,9 @@ public class AhText extends PApplet {
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
 		size(screen.width, screen.height, P2D);
-		pg = createGraphics(screen.width, screen.height, JAVA2D);
-		fs.enter();
+		
+pg = createGraphics(screen.width, screen.height, JAVA2D);
+		fs.enter(); 
 		background(255);
 		smooth();
 		noStroke();
@@ -130,7 +131,7 @@ public class AhText extends PApplet {
 					}
 					for (int i = 0; i < numberOfColumns; i++) {
 						column[i].resetValues();
-					}
+					}		 	
 					// flagFall = 0;
 					// flagChar = 0;
 					// flagAlpha = 0;
