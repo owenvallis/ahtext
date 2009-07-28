@@ -1,8 +1,6 @@
 import fullscreen.*;
 import processing.core.*;
 
-
-
 public class AhText extends PApplet {
 
 	/**
@@ -14,11 +12,12 @@ public class AhText extends PApplet {
 	 */
 	public static void main(String args[]) {
 
-		PApplet.main(new String[] {"AhText" });
+		PApplet.main(new String[] { "AhText" });
 
 	}
 
 	PFont font;
+
 	FullScreen fs;
 
 	int numberOfColumns;
@@ -28,27 +27,30 @@ public class AhText extends PApplet {
 	int flagAlpha;
 	int boundHeight;
 	int boundWidth;
-
+	
+	PGraphics pg;
 	TextColumns[] column;
 	TextRows[] row;
 	MediaDatabase mediaDatabase = new MediaDatabase();
 	StringController stringController;
+	MandalaViewController mandalaViewController;
 
 
 	public void setup() {
-
+		
 		fs = new FullScreen(this);
-		fs.setShortcutsEnabled(false); 
+		fs.setShortcutsEnabled(false);
 		size(screen.width, screen.height, P2D);
+		
+pg = createGraphics(screen.width, screen.height, JAVA2D);
 		fs.enter(); 
 		background(255);
 		smooth();
 		noStroke();
 
-
-
 		// load and set the font
 		font = loadFont("Helvetica-24.vlw");
+
 		boundHeight = 24;
 		textFont(font);
 		textAlign(CENTER);
@@ -62,30 +64,35 @@ public class AhText extends PApplet {
 			}
 		}
 
-
 		numberOfColumns = width / boundWidth;
 		numberOfRows = height / boundHeight;
 
 		column = new TextColumns[numberOfColumns];
 		for (int i = 0; i < numberOfColumns; i++)
-			column[i] = new TextColumns(this, i, boundWidth, boundHeight, numberOfRows);
+			column[i] = new TextColumns(this, i, boundWidth, boundHeight,
+					numberOfRows);
 
 		row = new TextRows[numberOfRows];
 		for (int i = 0; i < numberOfRows; i++)
-			row[i] = new TextRows(this, i, boundWidth, boundHeight, numberOfColumns);	
-		stringController = new StringController(numberOfRows, numberOfColumns, row, mediaDatabase);
+			row[i] = new TextRows(this, i, boundWidth, boundHeight,
+					numberOfColumns);
+		stringController = new StringController(numberOfRows, numberOfColumns,
+				row, mediaDatabase);
 
+
+		mandalaViewController = new MandalaViewController(this, pg);
+
+		
 
 		loop();
-		frameRate(10);		
+		frameRate(120);
 	}
 
 	public void draw() {
 		fill(255, 255, 255, 200);
 		rect(0, 0, width, height);
 		noStroke();
-
-
+/*
 		if (flagFall != numberOfColumns) {
 			flagFall = 0;
 
@@ -95,9 +102,9 @@ public class AhText extends PApplet {
 					flagFall += 1;
 				}
 			}
-		}else {
+		} else {
 
-			if (flagChar != numberOfRows){
+			if (flagChar != numberOfRows) {
 				flagChar = 0;
 
 				for (int i = 0; i < numberOfRows; i++) {
@@ -106,34 +113,40 @@ public class AhText extends PApplet {
 						flagChar += 1;
 					}
 				}
-			}else{
+			} else {
 
-				if(flagAlpha != numberOfRows){
+				if (flagAlpha != numberOfRows) {
 					flagAlpha = 0;
 
-					for (int i = 0; i < numberOfRows; i++){					
+					for (int i = 0; i < numberOfRows; i++) {
 						row[i].displayCharFade();
 						if (row[i].alphaFlag == 1) {
 							flagAlpha += 1;
 						}
 					}
-				}else{
+				} else {
 
-					for (int i = 0; i < numberOfRows; i++){
+					for (int i = 0; i < numberOfRows; i++) {
 						row[i].resetValues();
 					}
-					for (int i = 0; i < numberOfColumns; i++){
+					for (int i = 0; i < numberOfColumns; i++) {
 						column[i].resetValues();
-					}
-					flagFall = 0;
-					flagChar = 0;
-					flagAlpha = 0;
-					stringController.numStringToUse();
-					stringController.fillRows();
+					}		 	
+					// flagFall = 0;
+					// flagChar = 0;
+					// flagAlpha = 0;
+					// stringController.numStringToUse();
+					// stringController.fillRows();
+					
+				    
+
+
 				}
-			}				
+			}
 		}
-	}		 	
+*/		
+		
+		mandalaViewController.displayMandala();
+		
+	}
 }
-
-

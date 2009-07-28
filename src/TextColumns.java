@@ -10,6 +10,7 @@ public class TextColumns {
 	private float boundHeight;
 	private float boundWidth;
 	int flag;
+	
 	PApplet parent; // The parent PApplet that we will render ourselves onto
 
 
