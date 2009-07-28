@@ -40,7 +40,7 @@ public class AhText extends PApplet {
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false); 
 		size(screen.width, screen.height, P2D);
-		//fs.enter(); 
+		fs.enter(); 
 		background(255);
 		smooth();
 		noStroke();
@@ -133,29 +133,7 @@ public class AhText extends PApplet {
 				}
 			}				
 		}
-	}
-		 
-
-/*	
-		for (int i = 0; i < numberOfRows; i++) {
-			row[i].display();
-			row[i].pushChar();
-		}
-*/		
-/*
-		if(flagAlpha != numberOfRows){
-			flagAlpha = 0;
-			for (int i = 0; i < numberOfRows; i++){					
-				row[i].displayCharFade();
-				if (row[i].alphaFlag == 1) {
-					flagAlpha += 1;
-				}
-				System.out.println(flagAlpha);
-			}
-		}
-*/
-	
-
+	}		 	
 }
 
 
