@@ -1,5 +1,5 @@
-import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 
 // ========================================================================= // 
 // AH-Opera | Interactive 2D Mandala Wheel
@@ -9,25 +9,29 @@ import processing.core.PConstants;
 
 public class MandalaNode {
 
-	PApplet parent; // The parent PApplet that we will render ourselves onto
 	int id;
 	float x;
 	float y;
+	float nodeRadius;
+	float nodeStroke;
 	int r, g, b;
+	PGraphics pg;
 
-	MandalaNode(PApplet p, int cId, float cX, float cY) {
-		parent = p;
+	MandalaNode(PGraphics pgraphics,int cId, float cX, float cY, float nr, float ns) {
 		id = cId;
 		x = cX;
 		y = cY;
+		nodeRadius = nr;
+		nodeStroke = ns;
+		pg = pgraphics;
 	}
 
 	void drawMandalaNode(){
-		parent.stroke(0);
-		parent.strokeWeight(parent.height/60);
-		parent.fill(255);
-		parent.ellipseMode(PConstants.CENTER);
-		parent.ellipse(x, y, parent.height/(float)10, parent.height/(float)10);
+		pg.stroke(0);
+		pg.strokeWeight(nodeStroke);
+		pg.fill(255);
+		pg.ellipseMode(PConstants.CENTER);
+		pg.ellipse(x, y, nodeRadius, nodeRadius);
 		// noStroke();
 	}
 
