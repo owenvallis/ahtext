@@ -56,6 +56,7 @@ public class AhText extends PApplet {
 		textMode(SCREEN);
 
 		// find text bounding box width for the # of columns
+		
 		for (int x = 65; x < 89; x++) {
 
 			if (textWidth((char) x) > boundWidth) {
@@ -91,7 +92,7 @@ public class AhText extends PApplet {
 		fill(255, 255, 255, 200);
 		rect(0, 0, width, height);
 		noStroke();
-/*
+
 		if (flagFall != numberOfColumns) {
 			flagFall = 0;
 
@@ -137,15 +138,16 @@ public class AhText extends PApplet {
 					// stringController.numStringToUse();
 					// stringController.fillRows();
 					
+					mandalaViewController.displayMandala();
 				    
 
 
 				}
 			}
 		}
-*/		
 		
-		mandalaViewController.displayMandala();
+		
+		
 		
 	}
 }
