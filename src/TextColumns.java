@@ -1,4 +1,7 @@
 import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PGraphics;
+import processing.core.PFont;
 
 public class TextColumns {
 
@@ -11,12 +14,17 @@ public class TextColumns {
 	private float boundWidth;
 	int flag;
 	
-	PApplet parent; // The parent PApplet that we will render ourselves onto
+	PApplet parent;// The pg PApplet that we will render ourselves onto
+	PGraphics pg;
+	PFont ahTextFont;
 
 
 	// sets the column position, and column width
-	TextColumns(PApplet p, int posX, float charBounds, float textHght, int rws) {
+	TextColumns(PApplet p, PGraphics pgraphics, int posX, float charBounds, float textHght, int rws, PFont at) {
 		parent = p;
+		pg = pgraphics;
+		ahTextFont = at;
+		
 		if (rws > 0) {
 			rows = rws;
 		} else {
@@ -45,6 +53,10 @@ public class TextColumns {
 
 	void display()
 	{
+		pg.textFont(ahTextFont);
+		pg.textAlign(PConstants.CENTER);
+		pg.textMode(PConstants.SCREEN);
+
 		char letter;
 		int let;
 
@@ -52,9 +64,9 @@ public class TextColumns {
 		for (int i = 1; i <= y; i++)
 		{
 			let = (int)parent.random(65,88);
-			parent.fill(parent.random(255));
+			pg.fill(parent.random(255));
 			letter = (char)let;
-			parent.text(letter, (float)(charPosX*boundWidth-(boundWidth*.25)), i*boundHeight);
+			pg.text(letter, (float)(charPosX*boundWidth-(boundWidth*.25)), i*boundHeight);
 		}
 
 		//sets rate for column growth

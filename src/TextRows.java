@@ -1,4 +1,7 @@
 import processing.core.PApplet;
+import processing.core.PConstants;
+import processing.core.PGraphics;
+import processing.core.PFont;
 import java.util.Random;
 
 public class TextRows {
@@ -15,7 +18,10 @@ public class TextRows {
 	private float boundWidth;
 	int flag;
 	int alphaFlag;
+	
 	PApplet parent; // The parent PApplet that we will render ourselves onto
+	PGraphics pg;
+	PFont ahTextFont;
 
 	char[] characterArray;
 	char[] randCharacterArray;
@@ -24,8 +30,12 @@ public class TextRows {
 	TextDatabase txdb = new TextDatabase();
 
 	// sets the column position, and column width
-	TextRows(PApplet p, int posX, float charBounds, float textHght, int clmns) {
+	TextRows(PApplet p, PGraphics pgraphics, int posX, float charBounds, float textHght, int clmns, PFont at) {
 		parent = p;
+		pg = pgraphics;
+		ahTextFont = at;
+
+
 		if (clmns > 0) {
 			columns = clmns;
 		} else {
@@ -72,9 +82,9 @@ public class TextRows {
 		char letter;
 		charAlphaValue += fadeRate;
 		for(int i = 0; i < columns; i++){
-		parent.fill(charAlphaValue);	
+		pg.fill(charAlphaValue);	
 		letter = characterArray[i];	
-		parent.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
+		pg.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
 		}
 		if(charAlphaValue > 280){
 			alphaFlag = 1;
@@ -89,7 +99,7 @@ public class TextRows {
 
 		for (int i = 0; i < columns; i++) {
 			let = (int) parent.random(65, 88);
-			parent.fill(parent.random(255));
+			pg.fill(parent.random(255));
 			letter = (char) let;
 			randCharacterArray[i] = letter;
 		}
@@ -101,28 +111,28 @@ public class TextRows {
 
 		if (direction < 5) {
 			for (int i = 0; i < fillPos; i++) {
-				parent.fill(0);
+				pg.fill(0);
 				letter = characterArray[i];
-				parent.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight); 
+				pg.text(letter, (float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight); 
 			}
 			for (int i = columns; i > fillPos; i--) {
-				parent.fill(parent.random(255));
+				pg.fill(parent.random(255));
 				letter = randCharacterArray[i - 1];
-				parent.text(letter,
+				pg.text(letter,
 						(float) (i * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
 			}
 
 		} else if (direction >= 5) {
 			for (int i = 0; i < columns - fillPos; i++) {
-				parent.fill(parent.random(255));
+				pg.fill(parent.random(255));
 				letter = randCharacterArray[i];
-				parent.text(letter,
+				pg.text(letter,
 						(float) ((i+1) * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
 			}
 			for (int i = columns; i > columns - fillPos; i--) {
-				parent.fill(0);
+				pg.fill(0);
 				letter = characterArray[i - 1];
-				parent.text(letter,
+				pg.text(letter,
 						(float) (i * boundWidth-(boundWidth*.25)), charPosX * boundHeight);
 
 			}
