@@ -40,8 +40,7 @@ public class AhText extends PApplet {
 		
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
-		size(screen.width, screen.height, P2D);
-		
+		size(screen.width, screen.height, P2D);		
 		pg = createGraphics(screen.width, screen.height, JAVA2D);
 		fs.enter(); 
 		background(255);
