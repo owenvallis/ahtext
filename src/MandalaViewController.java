@@ -1,8 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
-import processing.core.PGraphics;
-import processing.core.PImage;
 
 // ========================================================================= // 
 // AH-Opera | Interactive 2D Mandala Wheel
@@ -31,8 +29,7 @@ public class MandalaViewController {
 
 
 
-	PImage image;
-	PGraphics pg;
+	PApplet parent; // The parent PApplet that we will render ourselves onto
 	PFont mandalaFont;
 	MandalaHover mandalaHover;
 	MandalaNode[] mandalaNodeList;
@@ -40,32 +37,30 @@ public class MandalaViewController {
 
 
 
-	PApplet parent; // The parent PApplet that we will render ourselves onto
 
 
-
-	MandalaViewController(PApplet p, PGraphics pgraphics ) {
+	MandalaViewController(PApplet p) {
 		parent = p;
-		pg = pgraphics;
-		nodeRadius = pg.height/(float)10;
-		nodeStroke = pg.height/60;
-		circleRadius = pg.height/(float)1.5;
-		circleStroke = pg.height/37;
-		xCenter = pg.width/2;
-		yCenter = pg.height/2;
+		
+		nodeRadius = parent.height/(float)10;
+		nodeStroke = parent.height/60;
+		circleRadius = parent.height/(float)1.5;
+		circleStroke = parent.height/37;
+		xCenter = parent.width/2;
+		yCenter = parent.height/2;
 		mandalaFont = parent.loadFont("AvantGuard-30.vlw");
 		nodePos = new float [(int) numberOfNodes][2];
 		mandalaNodeList = new MandalaNode[(int) numberOfNodes];
 		for (int i = 0; i < numberOfNodes; i++) {
 			xA = PApplet.cos(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-			* (pg.height / 3);
+			* (parent.height / 3);
 			yA = PApplet.sin(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-			* (pg.height / 3);
-			mandalaNodeList[i] = new MandalaNode(pg, i + 1, xA, yA, nodeRadius, nodeStroke);
+			* (parent.height / 3);
+			mandalaNodeList[i] = new MandalaNode(parent, i + 1, xA, yA, nodeRadius, nodeStroke);
 			nodePos[i][0] = xA;
 			nodePos[i][1] = yA;
 		}
-		mandalaHover = new MandalaHover(pg, mandalaFont, numberOfNodes, nodeRadius, circleRadius, nodePos);
+		mandalaHover = new MandalaHover(parent, mandalaFont, numberOfNodes, nodeRadius, circleRadius, nodePos);
 	}
 
 
@@ -81,29 +76,27 @@ public class MandalaViewController {
 
 	void displayMandala() {
 
-		pg.beginDraw();
-		pg.smooth();
-		pg.ellipseMode(PConstants.CENTER);
-		pg.translate(xCenter, yCenter);
+		parent.smooth();
+		parent.ellipseMode(PConstants.CENTER);
+		parent.translate(xCenter, yCenter);
 
 		// rot = (mouseX) * .00475;
 		// rotate(rot);
 
-		pg.background(255);
-		pg.stroke(0);
-		pg.strokeWeight(circleStroke);
-		pg.ellipseMode(PConstants.CENTER);
-		pg.ellipse(0, 0, circleRadius, circleRadius);
-		pg.strokeWeight(nodeStroke);
-		pg.ellipseMode(PConstants.CENTER);
-		pg.ellipse(0, 0, nodeRadius, nodeRadius);
+		parent.background(255);
+		parent.stroke(0);
+		parent.strokeWeight(circleStroke);
+		parent.ellipseMode(PConstants.CENTER);
+		parent.ellipse(0, 0, circleRadius, circleRadius);
+		parent.strokeWeight(nodeStroke);
+		parent.ellipseMode(PConstants.CENTER);
+		parent.ellipse(0, 0, nodeRadius, nodeRadius);
 
 		// textleft();
 
 		drawMandalaNode(mandalaNodeList);
 		mandalaHover.drawNodeHover(parent.mouseX, parent.mouseY);
-		pg.endDraw();
-		parent.image(pg,0,0);
+
 		// hover();
 		//System.out.println(button);
 	}
