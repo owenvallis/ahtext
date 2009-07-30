@@ -50,7 +50,7 @@ public class AhText extends PApplet {
 	}
 
 	public void draw() {
-	if (mousePressed){
+			if (mousePressed){
 		mandalaViewController.displayMandala();
 	}
 	else{
