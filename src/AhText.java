@@ -42,7 +42,7 @@ public class AhText extends PApplet {
 		fs.setShortcutsEnabled(false);
 		size(screen.width, screen.height, P2D);
 		
-pg = createGraphics(screen.width, screen.height, JAVA2D);
+		pg = createGraphics(screen.width, screen.height, JAVA2D);
 		fs.enter(); 
 		background(255);
 		smooth();
