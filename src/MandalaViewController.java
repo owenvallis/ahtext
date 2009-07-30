@@ -16,10 +16,6 @@ public class MandalaViewController {
 	float rot;
 	float addfillb = 10;
 	float addfillc = 255;
-	float pulse;
-	float pulsate;
-	float pulser;
-	float angle;
 	float x;
 	float y;
 	float xCenter;
@@ -29,20 +25,25 @@ public class MandalaViewController {
 	float nodeRadius;
 	float nodeStroke;
 	float numberOfNodes = 12;
+	float xA;
+	float yA;
 	int button;
-	
+
+
 
 	PImage image;
 	PGraphics pg;
 	PFont mandalaFont;
 	MandalaHover mandalaHover;
 	MandalaNode[] mandalaNodeList;
+	float[][] nodePos;
 
-	
+
+
 	PApplet parent; // The parent PApplet that we will render ourselves onto
 
-	
-	
+
+
 	MandalaViewController(PApplet p, PGraphics pgraphics ) {
 		parent = p;
 		pg = pgraphics;
@@ -53,17 +54,20 @@ public class MandalaViewController {
 		xCenter = pg.width/2;
 		yCenter = pg.height/2;
 		mandalaFont = parent.loadFont("AvantGuard-30.vlw");
-		mandalaHover = new MandalaHover(pg, mandalaFont);
+		nodePos = new float [(int) numberOfNodes][2];
 		mandalaNodeList = new MandalaNode[(int) numberOfNodes];
 		for (int i = 0; i < numberOfNodes; i++) {
-			float x = PApplet.cos(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-					* (pg.height / 3);
-			float y = PApplet.sin(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-					* (pg.height / 3);
-			mandalaNodeList[i] = new MandalaNode(pg, i + 1, x, y, nodeRadius, nodeStroke);
+			xA = PApplet.cos(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
+			* (pg.height / 3);
+			yA = PApplet.sin(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
+			* (pg.height / 3);
+			mandalaNodeList[i] = new MandalaNode(pg, i + 1, xA, yA, nodeRadius, nodeStroke);
+			nodePos[i][0] = xA;
+			nodePos[i][1] = yA;
 		}
+		mandalaHover = new MandalaHover(pg, mandalaFont, numberOfNodes, nodeRadius, circleRadius, nodePos);
 	}
-	
+
 
 
 
@@ -79,9 +83,6 @@ public class MandalaViewController {
 
 		pg.beginDraw();
 		pg.smooth();
-		pulser = (float) .006;
-		angle = angle + pulser;
-		pulsate = PApplet.abs(70 * PApplet.sin(angle));
 		pg.ellipseMode(PConstants.CENTER);
 		pg.translate(xCenter, yCenter);
 
@@ -100,7 +101,7 @@ public class MandalaViewController {
 		// textleft();
 
 		drawMandalaNode(mandalaNodeList);
-		mandalaHover.drawNodeHover(parent.mouseX, parent.mouseY, pulsate);
+		mandalaHover.drawNodeHover(parent.mouseX, parent.mouseY);
 		pg.endDraw();
 		parent.image(pg,0,0);
 		// hover();
