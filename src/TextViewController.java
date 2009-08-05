@@ -62,8 +62,6 @@ public class TextViewController {
 
 		stringController = new StringController(numberOfRows, numberOfColumns,
 				row, mediaDatabase);
-
-
 	}
 
 	void displayText() {
