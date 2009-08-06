@@ -16,12 +16,8 @@ public class AhText extends PApplet {
 
 	}
 
-
-
 	FullScreen fs;
-
 	PGraphics pg;
-
 
 	TextViewController textViewController;
 	MandalaViewController mandalaViewController;
@@ -30,7 +26,7 @@ public class AhText extends PApplet {
 	public void setup() {
 
 		size(screen.width, screen.height, JAVA2D);
-		pg = createGraphics(screen.width, screen.height, JAVA2D);
+		pg = createGraphics(screen.width, screen.height, P2D);
 
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
@@ -44,22 +40,26 @@ public class AhText extends PApplet {
 		mandalaViewController = new MandalaViewController(this);
 
 
-
 		loop();
-		frameRate(11);
+		frameRate(30);
+		
 	}
+	
+
+	
 
 	public void draw() {
-		
-		switch(key){
-		case 'm':
+
+		switch(key) {
+
+		case 't':  // text mode
+			textViewController.displayText();  
+			break;
+		case 'm': // mandala mode
 			mandalaViewController.displayMandala();
 			break;
-		case 't':
-
-			textViewController.displayText();
-			break;
 		}
+
 		
 	}
 }

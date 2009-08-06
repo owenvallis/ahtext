@@ -25,7 +25,11 @@ public class MandalaViewController {
 	float numberOfNodes = 12;
 	float xA;
 	float yA;
+	float screenHeight;
+	float scalingFactor = (float) 1.0;
 	int button;
+	
+	
 
 
 
@@ -41,11 +45,11 @@ public class MandalaViewController {
 
 	MandalaViewController(PApplet p) {
 		parent = p;
-		
-		nodeRadius = parent.height/(float)10;
-		nodeStroke = parent.height/60;
-		circleRadius = parent.height/(float)1.5;
-		circleStroke = parent.height/37;
+		screenHeight = parent.height*scalingFactor;
+		nodeRadius = screenHeight/(float)10;
+		nodeStroke = screenHeight/60;
+		circleRadius = screenHeight/(float)1.5;
+		circleStroke = screenHeight/37;
 		xCenter = parent.width/2;
 		yCenter = parent.height/2;
 		mandalaFont = parent.loadFont("AvantGuard-30.vlw");
@@ -53,14 +57,14 @@ public class MandalaViewController {
 		mandalaNodeList = new MandalaNode[(int) numberOfNodes];
 		for (int i = 0; i < numberOfNodes; i++) {
 			xA = PApplet.cos(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-			* (parent.height / 3);
+			* (screenHeight / 3);
 			yA = PApplet.sin(PApplet.radians((float) (i * (360.0 / numberOfNodes))))
-			* (parent.height / 3);
+			* (screenHeight / 3);
 			mandalaNodeList[i] = new MandalaNode(parent, i + 1, xA, yA, nodeRadius, nodeStroke);
 			nodePos[i][0] = xA;
 			nodePos[i][1] = yA;
 		}
-		mandalaHover = new MandalaHover(parent, mandalaFont, numberOfNodes, nodeRadius, circleRadius, nodePos);
+		mandalaHover = new MandalaHover(parent, mandalaFont, numberOfNodes, nodeRadius, circleRadius, nodePos, xCenter, yCenter, screenHeight);
 	}
 
 
@@ -79,10 +83,8 @@ public class MandalaViewController {
 		parent.smooth();
 		parent.ellipseMode(PConstants.CENTER);
 		parent.translate(xCenter, yCenter);
-
-		// rot = (mouseX) * .00475;
-		// rotate(rot);
-
+		//parent.translate(parent.screen.width, parent.screen.height);
+	
 		parent.background(255);
 		parent.stroke(0);
 		parent.strokeWeight(circleStroke);
