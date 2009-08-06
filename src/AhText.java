@@ -39,6 +39,7 @@ public class AhText extends PApplet {
 		textViewController = new TextViewController(this, pg);
 		mandalaViewController = new MandalaViewController(this);
 
+
 		loop();
 		frameRate(30);
 		
