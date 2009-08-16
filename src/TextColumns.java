@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
 import processing.core.PFont;
+import processing.core.PGraphics;
 
 public class TextColumns {
 
