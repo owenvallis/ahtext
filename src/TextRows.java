@@ -1,7 +1,8 @@
-import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PFont;
 import java.util.Random;
+
+import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PGraphics;
 
 public class TextRows {
 
