@@ -1,11 +1,20 @@
-import fullscreen.*;
-import processing.core.*;
+import processing.core.PApplet;
+import processing.core.PGraphics;
+import fullscreen.FullScreen;
 
 public class AhText extends PApplet {
 
 	/**
+	 * Fields for AhText
 	 */
 	private static final long serialVersionUID = 1L;
+	FullScreen fs;
+	PGraphics pg;
+
+	TextViewController textViewController;
+	TuioHandler tuioHandler;
+	MandalaViewController mandalaViewController;
+	final static int notouchTime = 30 * 1000;               // how many ms to wait before restarting the falling text
 
 	/**
 	 * @param args
@@ -16,13 +25,6 @@ public class AhText extends PApplet {
 
 	}
 
-	FullScreen fs;
-	PGraphics pg;
-
-	TextViewController textViewController;
-	MandalaViewController mandalaViewController;
-
-
 	public void setup() {
 
 		size(screen.width, screen.height, JAVA2D);
@@ -30,36 +32,32 @@ public class AhText extends PApplet {
 
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
-		fs.enter();
+		//fs.enter();
 
-		background(255);
-		smooth();
-		noStroke();
+
 
 		textViewController = new TextViewController(this, pg);
-		mandalaViewController = new MandalaViewController(this);
+		tuioHandler = new TuioHandler(this);
+		mandalaViewController = new MandalaViewController(tuioHandler, this);
 
 
+		background(255);
 		loop();
-		frameRate(30);
-		
-	}
-	
 
-	
+	}
+
+
+
 
 	public void draw() {
 
-		switch(key) {
-
-		case 't':  // text mode
+		if(millis() - tuioHandler.getLastTouchTime() > notouchTime) {
 			textViewController.displayText();  
-			break;
-		case 'm': // mandala mode
+		} else{
+			textViewController.resetFallText();
 			mandalaViewController.displayMandala();
-			break;
 		}
 
-		
+
 	}
 }

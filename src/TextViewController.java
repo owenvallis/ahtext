@@ -65,6 +65,7 @@ public class TextViewController {
 	}
 
 	void displayText() {
+		parent.frameRate(10);
 		pg.beginDraw();
 		pg.fill(255, 255, 255, 200);
 		pg.rect(0, 0, pg.width, pg.height);
@@ -103,23 +104,27 @@ public class TextViewController {
 					}
 				} else {
 
-					for (int i = 0; i < numberOfRows; i++) {
-						row[i].resetValues();
-					}
-					for (int i = 0; i < numberOfColumns; i++) {
-						column[i].resetValues();
-					}
-
-					flagFall = 0;
-					flagChar = 0;
-					flagAlpha = 0;
-					stringController.numStringToUse();
-					stringController.fillRows();
+					resetFallText();
 
 				}
 			}
 		}
 		pg.endDraw();
 		parent.image(pg, 0, 0);
+	}
+
+	public void resetFallText(){
+		for (int i = 0; i < numberOfRows; i++) {
+			row[i].resetValues();
+		}
+		for (int i = 0; i < numberOfColumns; i++) {
+			column[i].resetValues();
+		}
+
+		flagFall = 0;
+		flagChar = 0;
+		flagAlpha = 0;
+		stringController.numStringToUse();
+		stringController.fillRows();
 	}
 }
