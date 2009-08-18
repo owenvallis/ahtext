@@ -21,7 +21,7 @@ public class TuioHandler extends Observable implements TuioListener {
 	PApplet parent;
 
 	private int cursorX, cursorY;			//blob positions
-	private int lastTouchTime;                                // last time (in ms) from which a cursor was pressed on the table
+	private int lastTouchTime;             // last time (in ms) from which a touch/click event happened
 
 
 	/**
@@ -37,7 +37,7 @@ public class TuioHandler extends Observable implements TuioListener {
 		tuioClient = new TuioClient();
 		tuioClient.addTuioListener(this);
 		tuioClient.connect();
-		System.out.println("hello world");
+		System.out.println("TUIO connection established on port 3333");
 	}
 
 	/**
@@ -47,11 +47,19 @@ public class TuioHandler extends Observable implements TuioListener {
 		return cursorX;
 	}
 
+	public void setCursorX(int cursorX) {
+		this.cursorX = cursorX;
+	}
+
 	/**
 	 * @return the cursorY
 	 */
 	public int getCursorY() {
 		return cursorY;
+	}
+	
+	public void setCursorY(int cursorY) {
+		this.cursorY = cursorY;
 	}
 	
 	/**
@@ -153,6 +161,19 @@ public class TuioHandler extends Observable implements TuioListener {
 		resetTouchTimer();
 	}
 	
+	/**
+	 * Notify the Observers whenever we get a mouse event
+	 * 
+	 */
+	public void mouseEventsChanged(){
+		setChanged();
+		notifyObservers();
+		resetTouchTimer();
+	}
+	
+	/**
+	 * holds the time at which the last touch event occurred
+	 */
 	private void resetTouchTimer() {
 		    lastTouchTime = parent.millis();
 	}

@@ -1,9 +1,7 @@
-import java.util.Observable;
-
 import processing.core.PApplet;
 import processing.core.PFont;
 
-public class MandalaViewController extends Observable {
+public class MandalaViewController {
 
 	TuioHandler tuioHandler;
 	PApplet parent;
@@ -21,7 +19,7 @@ public class MandalaViewController extends Observable {
 		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent, mandalaFont);
 		mandalaNodeCenter.setFadeColor(100, 1, 0, 0, 0, 0, 100, 1);
 		mandalaNodeCenter.setNodeStoryName("the story of being invisible");
-		mandalaNodeList = new MandalaNode[12];
+		mandalaNodeList = new MandalaNode[12]; //TODO fix to number of nodes
 		for(int i = 0; i < 12; i++){
 			mandalaNodeList[i] = new MandalaNode(this.tuioHandler, this, parent, mandalaFont);
 			mandalaNodeList[i].setNodePosition(i);
@@ -118,8 +116,50 @@ public class MandalaViewController extends Observable {
 		parent.stroke(0);
 		parent.strokeWeight(parent.height/37); // TODO This might extend MandalaNode, but we don't think so as it needs no additional behaviors
 		parent.ellipse(0,0,parent.height/(float)1.5,parent.height/(float)1.5);
-		setChanged();
-		notifyObservers();
+		mandalaNodeCenter.drawMandalaNode();
+		if(mandalaNodeCenter.isShouldFade()){
+			mandalaNodeCenter.fadeOverlay();
+		} else {
+			mandalaNodeCenter.resetColors();
+		}
+		if(mandalaNodeCenter.isAnimationActive()){
+			tuioHandler.deleteObservers();
+			if(scaleFactor > .1){
+				scaleFactor -= .05;
+			} 
+		}
+		for(int i = 0; i < 12; i++){
+			mandalaNodeList[i].drawMandalaNode();
+		}
+		for(int i = 0; i < 12; i++){
+			if(mandalaNodeList[i].isShouldFade()){
+				mandalaNodeList[i].fadeOverlay();
+			} else {
+				mandalaNodeList[i].resetColors();
+			}
+			if(mandalaNodeList[i].isAnimationActive()){
+				tuioHandler.deleteObservers();
+				if(scaleFactor > .1){
+					scaleFactor -= .05;
+				} 
+			}
+		}
+	}
+
+	public void resetMandala() {
+		scaleFactor = (float)1.0;
+		mandalaNodeCenter.setAnimationActive(false);
+		mandalaNodeCenter.setTriggerActive(false);
+		mandalaNodeCenter.setShouldFade(false);
+		mandalaNodeCenter.resetColors();
+		tuioHandler.addObserver(mandalaNodeCenter);
+		for(int i = 0; i < 12; i++){
+			mandalaNodeList[i].setAnimationActive(false);
+			mandalaNodeList[i].setTriggerActive(false);
+			mandalaNodeList[i].setShouldFade(false);
+			mandalaNodeList[i].resetColors();
+			tuioHandler.addObserver(mandalaNodeList[i]);
+		}
 	}
 
 }

@@ -11,15 +11,16 @@ import processing.core.PFont;
  *
  */
 public final class MandalaNodeCenter extends MandalaNode {
-
+	
+	MandalaViewController mandalaViewController;
 	private float[][] mandalaSpokeLineCoordinates = new float[12][4];
 
 	public MandalaNodeCenter(Observable observable, MandalaViewController mandalaViewController, PApplet parent, PFont mandalaFont){
 		//constructor
 		super(observable, mandalaViewController, parent, mandalaFont);
-
 		super.setNodeCenterX(0);
 		super.setNodeCenterY(0);
+		this.mandalaViewController = mandalaViewController;
 		setTBarPositions();
 
 
@@ -50,38 +51,12 @@ public final class MandalaNodeCenter extends MandalaNode {
 		}
 	}
 
-	public void update(Observable o, Object arg) {
-		if(o instanceof TuioHandler){
-			TuioHandler tuioHandler = (TuioHandler)o;
-			super.setCursorX(tuioHandler.getCursorX());
-			super.setCursorY(tuioHandler.getCursorY());
-			if(over(super.getNodeCenterX(), super.getNodeCenterY(), super.getCursorX(), super.getCursorY())){
-				super.setShouldFade(true);
-			} else {
-				super.setShouldFade(false);
-			}
-
-		} else if (o instanceof MandalaViewController){
-			drawMandalaNode();
-			if(super.isShouldFade()){
-				fadeOverlay();
-			} else {
-				super.setRedTemp(super.getRed());
-				super.setGreenTemp(super.getGreen()); 
-				super.setBlueTemp(super.getBlue());
-				super.setAlphaTemp(super.getAlpha());
-				super.setAngle(0);
-			}
-		}
-	}
-
 	/**
 	 * Draws the color fade overlay once a mandala is touched
 	 * 
 	 * @return whether or not the fade method should implement
 	 */
-	private void fadeOverlay(){
-		parent.fill(255);
+	public void fadeOverlay(){
 		super.setAngle(super.getAngle() + super.getPulser());
 		super.setPulsate(PApplet.abs(255 * PApplet.sin(super.getAngle())));
 		drawTBarFades();
@@ -89,7 +64,14 @@ public final class MandalaNodeCenter extends MandalaNode {
 		this.parent.textFont(mandalaFont);
 		this.parent.textAlign(PConstants.CENTER);
 		parent.fill(0, 0, 0, super.getPulsate());
-		parent.text(super.getNodeStoryName(), super.getTextXAlign(), super.getTextYAlign());		
+		parent.text(super.getNodeStoryName(), super.getTextXAlign(), super.getTextYAlign());
+		if(parent.millis() - super.getLastNodeTouchTime() > super.getNodeTouchTime()) {
+			super.setTriggerActive(true);
+			if(!super.isAnimationActive()){
+				parent.textSize(24);
+				parent.text("Touch",super.getNodeCenterX()+mandalaViewController.getxCenter(), (super.getNodeCenterY()+mandalaViewController.getyCenter())+(parent.textWidth("G")/2));
+			}
+		}
 	}
 
 	/**
