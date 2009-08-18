@@ -40,7 +40,7 @@ public class AhText extends PApplet {
 		tuioHandler = new TuioHandler(this);
 		mandalaViewController = new MandalaViewController(tuioHandler, this);
 
-
+		tuioHandler.setLastTouchTime(-(notouchTime+1)); //Hack by making the number negative to make the "millis() - tuioHandler.getLastTouchTime()" come out to a positive number the first time
 		background(255);
 		loop();
 
@@ -53,11 +53,20 @@ public class AhText extends PApplet {
 
 		if(millis() - tuioHandler.getLastTouchTime() > notouchTime) {
 			textViewController.displayText();  
+			mandalaViewController.resetMandala();
 		} else{
 			textViewController.resetFallText();
 			mandalaViewController.displayMandala();
 		}
-
-
+	}
+	
+	
+	/**
+	 * Overriding the default mousePressed method in processing to notify listeners
+	 */
+	public void mousePressed(){
+		tuioHandler.setCursorX(mouseX);
+		tuioHandler.setCursorY(mouseY);
+		tuioHandler.mouseEventsChanged();		
 	}
 }

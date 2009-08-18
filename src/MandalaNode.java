@@ -59,12 +59,17 @@ public class MandalaNode implements Observer {
 	//tuio input
 	private int cursorX, cursorY;
 
+	//Animation (trigger) Timer fields
+	private int lastNodeTouchTime;
+	private int nodeTouchTime;
+	private boolean triggerActive;
+	private boolean animationActive;
+
 	public MandalaNode(Observable observable, MandalaViewController mandalaViewController, PApplet parent, PFont mandalaFont){
 		// constructor
 		this.observable = observable;
 		observable.addObserver(this);
 		this.mandalaViewController = mandalaViewController;
-		mandalaViewController.addObserver(this);
 		this.parent = parent;
 		this.mandalaFont = mandalaFont;
 
@@ -92,10 +97,165 @@ public class MandalaNode implements Observer {
 		fadeRate = 4;
 		setRadiansOfNodeIntersect();
 		shouldFade = false;
+
+		//Animation(trigger) Timer fields
+		nodeTouchTime = 4 * 1000;
+		triggerActive = false;
+		animationActive = false;
+
 	}
 
 	// /////////////////////////////////////////////////////////////
-	// SET SETTERS AND GETTER///////////////////////////////////////
+	// SET METHODS//////////////////////////////////////////////////
+	// /////////////////////////////////////////////////////////////
+
+	/**
+	 * takes in the updates from all sources
+	 */
+	public void update(Observable o, Object arg) {
+		if(o instanceof TuioHandler){
+			TuioHandler tuioHandler = (TuioHandler)o;
+			this.cursorX = tuioHandler.getCursorX();
+			this.cursorY = tuioHandler.getCursorY();
+			if(over(nodeCenterX, nodeCenterY, this.cursorX, this.cursorY)){
+				resetNodeTouchTimer(); 
+				shouldFade = true;
+				if(triggerActive){
+					animationActive = true;
+				}
+			} else {
+				shouldFade = false;
+				resetNodeTouchTimer(); 
+				triggerActive = false;
+			}
+		}
+	}
+
+	/**
+	 * Test to see if TUIO event is over this particular node
+	 * 
+	 * @param nodePostionX the center of the node along the x-axis
+	 * @param nodePostionY the center of the node along the y-axis
+	 * @param x the current TUIO Coordinates
+	 * @param y
+	 * 
+	 * @return whether the TUIO event is inside the Node
+	 */
+	boolean over(float nodePostionX,float nodePostionY, int x, int y) {
+
+		float disX = (nodePostionX+(mandalaViewController.getxCenter()*mandalaViewController.getScaleFactor())) - x;
+		float disY = (nodePostionY+(mandalaViewController.getyCenter()*mandalaViewController.getScaleFactor())) - y;
+		if (Math.sqrt(Math.pow(disX,2) + Math.pow(disY,2)) < nodeRadius) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Reset the nodeTouchTimer to current millis()
+	 */
+	private void resetNodeTouchTimer() {
+		lastNodeTouchTime = parent.millis();
+	}
+
+	/**
+	 * Draw the Mandala node on the screen
+	 */
+	public void drawMandalaNode(){
+		parent.fill(255);
+		parent.stroke(0);
+		parent.strokeWeight(nodeStrokeWeight);
+		parent.ellipseMode(PConstants.CENTER);
+		parent.ellipse(nodeCenterX, nodeCenterY, nodeDiameter, nodeDiameter);		
+	}
+
+	/**
+	 * Draws the color fade overlay once a mandala is touched
+	 * 
+	 * @return whether or not the fade method should implement
+	 */
+	public void fadeOverlay(){
+		angle = angle + pulser;
+		pulsate = PApplet.abs(255 * PApplet.sin(angle));
+		drawFadeNode();
+		drawTBarFades();
+		this.parent.textFont(mandalaFont);
+		this.parent.textAlign(PConstants.CENTER);
+		parent.fill(0, 0, 0, pulsate);
+		parent.text(nodeStoryName, textXAlign, textYAlign);		
+		if(parent.millis() - lastNodeTouchTime > nodeTouchTime) {
+			triggerActive = true;
+			if(!animationActive){
+				parent.textSize(24);
+				parent.text("Touch",nodeCenterX+mandalaViewController.getxCenter(), (nodeCenterY+mandalaViewController.getyCenter())+(parent.textWidth("G")/2));
+			}
+		}
+	}
+
+	/**
+	 * Set the node stroke weight and color, and draw the ellipse over the existing black node
+	 */
+	public void drawFadeNode() { //TODO figure out better way to extend to MandalaNodeCenter so this can remain private
+		parent.strokeWeight(nodeFadeStrokeWeight);
+		defineFadeColor();
+		parent.ellipse(nodeCenterX, nodeCenterY, nodeFadeDiameter, nodeFadeDiameter);			
+	}
+
+	/**
+	 * Draws the InterNode connecting lines when an event is detected over the node
+	 */
+	private void drawTBarFades() {
+		//parent.stroke(0,0,0,this.alphaTemp  += fadeRate);
+		parent.strokeWeight(lineFadeStrokeWeight);
+		parent.line(spokeXA, spokeYA, spokeXB, spokeYB);
+		parent.line(tbarCounterClockwiseXA, tbarCounterClockwiseYA, tbarCounterClockwiseXB, tbarCounterClockwiseYB);
+		parent.line(tbarXA, tbarYA, tbarXB, tbarYB);		
+	}
+
+	/**
+	 * Defines the color of the fade overlay effect
+	 * 
+	 * @param red
+	 * @param fadeStateRed whether fading is on or not
+	 * @param green
+	 * @param fadeStateGreen whether fading is on or not
+	 * @param blue
+	 * @param fadeStateBlue whether fading is on or not
+	 * @param alpha
+	 * @param fadeStateAlpha whether fading is on or not
+	 */
+	public void setFadeColor(int red, int fadeStateRed, int green, int fadeStateGreen, 
+			int blue, int fadeStateBlue,int alpha, int fadeStateAlpha){	
+
+		this.red = redTemp = red; 	this.fadeStateRed = fadeStateRed;
+		this.green = greenTemp = green; this.fadeStateGreen = fadeStateGreen;
+		this.blue = blueTemp = blue; 	this.fadeStateBlue = fadeStateBlue;
+		this.alpha = alphaTemp = alpha; this.fadeStateAlpha = fadeStateAlpha;
+	}
+
+	/**
+	 * Method implements the fade colors on the overlay stroke function
+	 * This is called in the draw loop of the fadeOverlay() method
+	 */
+	public void defineFadeColor(){
+		parent.stroke (this.redTemp += (fadeRate * this.fadeStateRed), this.greenTemp += (fadeRate * this.fadeStateGreen),
+				this.blueTemp  += (fadeRate * this.fadeStateBlue), this.alphaTemp  += (fadeRate * this.fadeStateAlpha)); //define the color
+	}
+
+	/**
+	 * Used to reset the fade colors back to transparent
+	 */
+	public void resetColors(){
+		redTemp = red;
+		greenTemp = green; 
+		blueTemp = blue;
+		alphaTemp = alpha;
+		angle = 0;
+	}
+
+	// /////////////////////////////////////////////////////////////
+	// SETTERS AND GETTER///////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
 	/**
 	 * @param numberOfNodes sets the number of nodes along the circumference of the mandala
@@ -605,12 +765,14 @@ public class MandalaNode implements Observer {
 		setNodeCenter();
 		setTBarPositions();
 	}
+
 	/**
 	 * @return the nodePosition
 	 */
 	public int getNodePosition() {
 		return nodePosition;
 	}
+
 	/**
 	 * Set the Node position center X and Y coordinates
 	 */
@@ -620,6 +782,7 @@ public class MandalaNode implements Observer {
 		this.nodeCenterY = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
 		* circleRadius;
 	}
+
 	/**
 	 * @param circleDiameter the circleDiameter to set
 	 */
@@ -627,24 +790,28 @@ public class MandalaNode implements Observer {
 		this.circleDiameter = circleDiameter;
 		this.circleRadius = circleDiameter/2;
 	}
+
 	/**
 	 * @return the circleDiameter
 	 */
 	public float getCircleDiameter() {
 		return circleDiameter;
 	}
+
 	/**
 	 * @return the circleRadius
 	 */
 	public float getCircleRadius() {
 		return circleRadius;
 	}
+
 	/**
 	 * @param circleRadius the circleRadius to set
 	 */
 	public void setCircleRadius(float circleRadius) {
 		this.circleRadius = circleRadius;
 	}
+
 	/**
 	 * @param nodeCenterX the nodeCenterX to set
 	 */
@@ -679,6 +846,7 @@ public class MandalaNode implements Observer {
 	public void setnodeStrokeWeight(int nodeStrokeWeight) {
 		this.nodeStrokeWeight = nodeStrokeWeight;
 	}
+
 	/**
 	 * @return the nodeStrokeWeight
 	 */
@@ -692,6 +860,7 @@ public class MandalaNode implements Observer {
 	public void setfadeRate(float fadeRate) {
 		this.fadeRate = fadeRate;
 	}
+
 	/**
 	 * @return the nodeFadeDiameter
 	 */
@@ -776,7 +945,6 @@ public class MandalaNode implements Observer {
 		this.lineFadeStrokeWeight = lineFadeStrokeWeight;
 	}
 
-
 	/**
 	 * sets the draw coordinates for the tbar connector segments of the fade method
 	 */
@@ -839,136 +1007,37 @@ public class MandalaNode implements Observer {
 		return nodeStoryName;
 	}
 
-	// /////////////////////////////////////////////////////////////
-	// SET METHODS//////////////////////////////////////////////////
-	// /////////////////////////////////////////////////////////////
-	/**
-	 * takes in the updates from all sources
-	 */
-	public void update(Observable o, Object arg) {
-		if(o instanceof TuioHandler){
-			TuioHandler tuioHandler = (TuioHandler)o;
-			this.cursorX = tuioHandler.getCursorX();
-			this.cursorY = tuioHandler.getCursorY();
-			if(over(nodeCenterX, nodeCenterY, this.cursorX, this.cursorY)){
-				shouldFade = true;
-			} else {
-				shouldFade = false;
-			}
 
-		} else if (o instanceof MandalaViewController){
-			drawMandalaNode();
-			if(shouldFade){
-				fadeOverlay();
-			} else {
-				redTemp = red;
-				greenTemp = green; 
-				blueTemp = blue;
-				alphaTemp = alpha;
-				angle = 0;
-			}
-		}
-
-
+	public int getLastNodeTouchTime() {
+		return lastNodeTouchTime;
 	}
 
-	/**
-	 * Test to see if TUIO event is over this particular node
-	 * 
-	 * @param nodePostionX the center of the node along the x-axis
-	 * @param nodePostionY the center of the node along the y-axis
-	 * @param x the current TUIO Coordinates
-	 * @param y
-	 * 
-	 * @return whether the TUIO event is inside the Node
-	 */
-	boolean over(float nodePostionX,float nodePostionY, int x, int y) {
-
-		float disX = (nodePostionX+(mandalaViewController.getxCenter()*mandalaViewController.getScaleFactor())) - x;
-		float disY = (nodePostionY+(mandalaViewController.getyCenter()*mandalaViewController.getScaleFactor())) - y;
-		if (Math.sqrt(Math.pow(disX,2) + Math.pow(disY,2)) < nodeRadius) {
-			return true;
-		} else {
-			return false;
-		}
+	public void setLastNodeTouchTime(int lastNodeTouchTime) {
+		this.lastNodeTouchTime = lastNodeTouchTime;
 	}
 
-	/**
-	 * Draw the Mandala node on the screen
-	 */
-	public void drawMandalaNode(){
-		parent.fill(255);
-		parent.stroke(0);
-		parent.strokeWeight(nodeStrokeWeight);
-		parent.ellipseMode(PConstants.CENTER);
-		parent.ellipse(nodeCenterX, nodeCenterY, nodeDiameter, nodeDiameter);		
+	public int getNodeTouchTime() {
+		return nodeTouchTime;
 	}
 
-	/**
-	 * Draws the color fade overlay once a mandala is touched
-	 * 
-	 * @return whether or not the fade method should implement
-	 */
-	private void fadeOverlay(){
-		parent.fill(255);
-		angle = angle + pulser;
-		pulsate = PApplet.abs(255 * PApplet.sin(angle));
-		drawFadeNode();
-		drawTBarFades();
-		this.parent.textFont(mandalaFont);
-		this.parent.textAlign(PConstants.CENTER);
-		parent.fill(0, 0, 0, pulsate);
-		parent.text(nodeStoryName, textXAlign, textYAlign);		
+	public void setNodeTouchTime(int nodeTouchTime) {
+		this.nodeTouchTime = nodeTouchTime;
 	}
 
-	/**
-	 * Draws the InterNode connecting lines when an event is detected over the node
-	 */
-	private void drawTBarFades() {
-		parent.stroke(0,0,0,this.alphaTemp  += fadeRate);
-		parent.strokeWeight(lineFadeStrokeWeight);
-		parent.line(spokeXA, spokeYA, spokeXB, spokeYB);
-		parent.line(tbarCounterClockwiseXA, tbarCounterClockwiseYA, tbarCounterClockwiseXB, tbarCounterClockwiseYB);
-		parent.line(tbarXA, tbarYA, tbarXB, tbarYB);		
+	public boolean isTriggerActive() {
+		return triggerActive;
 	}
 
-	/**
-	 * Set the node stroke weight and color, and draw the ellipse over the existing black node
-	 */
-	public void drawFadeNode() { //TODO figure out better way to extend to MandalaNodeCenter so this can remain private
-		parent.strokeWeight(nodeFadeStrokeWeight);
-		defineFadeColor();
-		parent.ellipse(nodeCenterX, nodeCenterY, nodeFadeDiameter, nodeFadeDiameter);			
+	public void setTriggerActive(boolean triggerActive) {
+		this.triggerActive = triggerActive;
 	}
 
-	/**
-	 * Defines the color of the fade overlay effect
-	 * 
-	 * @param red
-	 * @param fadeStateRed whether fading is on or not
-	 * @param green
-	 * @param fadeStateGreen whether fading is on or not
-	 * @param blue
-	 * @param fadeStateBlue whether fading is on or not
-	 * @param alpha
-	 * @param fadeStateAlpha whether fading is on or not
-	 */
-	public void setFadeColor(int red, int fadeStateRed, int green, int fadeStateGreen, 
-			int blue, int fadeStateBlue,int alpha, int fadeStateAlpha){	
-
-		this.red = redTemp = red; 	this.fadeStateRed = fadeStateRed;
-		this.green = greenTemp = green; this.fadeStateGreen = fadeStateGreen;
-		this.blue = blueTemp = blue; 	this.fadeStateBlue = fadeStateBlue;
-		this.alpha = alphaTemp = alpha; this.fadeStateAlpha = fadeStateAlpha;
+	public boolean isAnimationActive() {
+		return animationActive;
 	}
 
-	/**
-	 * Method implements the fade colors on the overlay stroke function
-	 * This is called in the draw loop of the fadeOverlay() method
-	 */
-	public void defineFadeColor(){
-		parent.stroke (this.redTemp += (fadeRate * this.fadeStateRed), this.greenTemp += (fadeRate * this.fadeStateGreen),
-				this.blueTemp  += (fadeRate * this.fadeStateBlue), this.alphaTemp  += (fadeRate * this.fadeStateAlpha)); //define the color
+	public void setAnimationActive(boolean animationActive) {
+		this.animationActive = animationActive;
 	}
-
 }
+
