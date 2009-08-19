@@ -13,6 +13,7 @@ import processing.core.PFont;
 public final class MandalaNodeCenter extends MandalaNode {
 	
 	MandalaViewController mandalaViewController;
+	PFont mandalaFont;
 	private float[][] mandalaSpokeLineCoordinates = new float[12][4];
 
 	public MandalaNodeCenter(Observable observable, MandalaViewController mandalaViewController, PApplet parent, PFont mandalaFont){
@@ -21,6 +22,7 @@ public final class MandalaNodeCenter extends MandalaNode {
 		super.setNodeCenterX(0);
 		super.setNodeCenterY(0);
 		this.mandalaViewController = mandalaViewController;
+		this.mandalaFont = mandalaFont;
 		setTBarPositions();
 
 

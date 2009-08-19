@@ -1,5 +1,8 @@
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.video.Movie;
+
+
 
 public class MandalaViewController {
 
@@ -8,14 +11,19 @@ public class MandalaViewController {
 	MandalaNodeCenter mandalaNodeCenter;
 	MandalaNode[] mandalaNodeList;
 	PFont mandalaFont;
+	Movie myMovie;
+
+
 
 	private float xCenter, yCenter;
 	private float scaleFactor;
+	public float grow;
 
-	public MandalaViewController(TuioHandler tuioHandler, PApplet parent){
+	public MandalaViewController(TuioHandler tuioHandler, PApplet parent, TextViewController textViewController, Movie myMovie){
 		this.tuioHandler = tuioHandler;
 		this.parent = parent;
-		mandalaFont = parent.loadFont("AvantGuard-30.vlw");
+		this.myMovie = myMovie;
+		mandalaFont = this.parent.loadFont("AvantGuard-30.vlw");
 		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent, mandalaFont);
 		mandalaNodeCenter.setFadeColor(100, 1, 0, 0, 0, 0, 100, 1);
 		mandalaNodeCenter.setNodeStoryName("the story of being invisible");
@@ -110,8 +118,10 @@ public class MandalaViewController {
 		parent.frameRate(30);
 		parent.smooth();
 		parent.background(255);
+		movieEvent(myMovie);
+		parent.image(myMovie, 0, 0);
 		parent.translate(xCenter*scaleFactor, yCenter*scaleFactor);
-		parent.scale(scaleFactor);
+		parent.scale(scaleFactor*grow);
 		parent.fill(255);
 		parent.stroke(0);
 		parent.strokeWeight(parent.height/37); // TODO This might extend MandalaNode, but we don't think so as it needs no additional behaviors
@@ -162,4 +172,7 @@ public class MandalaViewController {
 		}
 	}
 
+	void movieEvent(Movie m) {
+		  m.read();
+		}
 }
