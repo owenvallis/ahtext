@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/TUIO/libTUIO.jar"/>
 	<classpathentry kind="lib" path="lib/TUIO/TUIO.jar"/>
+	<classpathentry kind="lib" path="lib/library/video.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

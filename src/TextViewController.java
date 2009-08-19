@@ -31,12 +31,14 @@ public class TextViewController {
 		parent = p;
 
 		// load and set the font
-		ahTextFont = parent.loadFont("Helvetica-24.vlw");
+		ahTextFont = parent.loadFont("Helvetica-24.vlw");;
 
 		boundHeight = 24;
 		parent.textFont(ahTextFont);
 		parent.textAlign(PConstants.CENTER);
 		parent.textMode(PConstants.SCREEN);
+
+		
 
 		// find text bounding box width for the # of columns
 		for (int x = 65; x < 89; x++) {
