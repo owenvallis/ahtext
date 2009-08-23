@@ -111,7 +111,7 @@ public class StringController {
 					numElements = numElements - temp.length();
 					stringUsed = true;
 				} else {												//else if the string won't fit, then..
-					leftOffset = (int)(numElements/2);					//divide the remaining unfilled characters in half
+					leftOffset = (numElements/2);					//divide the remaining unfilled characters in half
 					System.arraycopy(row[i].characterArray, 0, row[i].characterArray, leftOffset, (row[i].characterArray.length-numElements)); //shift the filled characters to the right by the left offset
 					for(n = 0; n < leftOffset; n++){
 					row[i].characterArray[n] = (char)47;				//fill in the left with forward slashes

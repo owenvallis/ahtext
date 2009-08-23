@@ -9,7 +9,7 @@ public class TextColumns {
 	private int charPosX;
 	private int rows;
 	private int x = 0;
-	private int y = 1;
+	public int y = 1;
 	private float boundHeight;
 	private float boundWidth;
 	int flag;
