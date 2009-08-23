@@ -13,7 +13,8 @@ public class MandalaViewController {
 	PFont mandalaFont;
 	PGraphics pg;
 	ExplodingText explodingText;
-	CreateZones createZones;
+	DrawZoneRectangles drawZoneRectangles;
+	ZoneCollection zoneCollection;
 
 
 
@@ -27,7 +28,8 @@ public class MandalaViewController {
 		this.tuioHandler = tuioHandler;
 		this.parent = parent;
 		this.pg = pg;
-		createZones = new CreateZones(tuioHandler, parent);
+		zoneCollection = new ZoneCollection(parent, tuioHandler);
+		drawZoneRectangles = new DrawZoneRectangles(parent, zoneCollection);
 		largeCircleStroke = parent.height/37;
 		mandalaFont = this.parent.loadFont("AvantGuard-30.vlw");
 		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent);
@@ -126,11 +128,11 @@ public class MandalaViewController {
 		//parent.background(255); not needed because we draw background in the explode draw method
 		explodingText.drawXplode();
 		if(mandalaNodeCenter.isAnimationActive()){
-			createZones.displayAllAcitiveRectangles();
+			drawZoneRectangles.displayAllAcitiveRectangles();
 		}
 		for(int i = 0; i < 12; i++){
 			if(mandalaNodeList[i].isAnimationActive()){
-				createZones.displayAllAcitiveRectangles();
+				drawZoneRectangles.displayAllAcitiveRectangles();
 
 			}
 		}
@@ -155,7 +157,8 @@ public class MandalaViewController {
 			mandalaNodeCenter.resetColors();//TODO needs to only be called once not every loop
 		}
 		if(mandalaNodeCenter.isAnimationActive()){
-			tuioHandler.deleteObservers();//TODO needs to only be called once not every loop
+			tuioHandler.removeObservers();
+			tuioHandler.registerObserver(zoneCollection);
 			if(scaleFactor > .1){
 				scaleFactor -= .05;
 			}		
@@ -170,11 +173,12 @@ public class MandalaViewController {
 				mandalaNodeList[i].resetColors();
 			}
 			if(mandalaNodeList[i].isAnimationActive()){
-				tuioHandler.deleteObservers();
+				tuioHandler.removeObservers();
+				tuioHandler.registerObserver(zoneCollection);
 				if(scaleFactor > .1){
 					scaleFactor -= .05;
 				} 
-				createZones.displayAllAcitiveRectangles();
+				drawZoneRectangles.displayAllAcitiveRectangles();
 			}
 		}
 	}
@@ -185,13 +189,13 @@ public class MandalaViewController {
 		mandalaNodeCenter.setTriggerActive(false);
 		mandalaNodeCenter.setShouldFade(false);
 		mandalaNodeCenter.resetColors();
-		tuioHandler.addObserver(mandalaNodeCenter);
+		tuioHandler.registerObserver(mandalaNodeCenter);
 		for(int i = 0; i < 12; i++){
 			mandalaNodeList[i].setAnimationActive(false);
 			mandalaNodeList[i].setTriggerActive(false);
 			mandalaNodeList[i].setShouldFade(false);
 			mandalaNodeList[i].resetColors();
-			tuioHandler.addObserver(mandalaNodeList[i]);
+			tuioHandler.registerObserver(mandalaNodeList[i]);
 		}
 	}
 
