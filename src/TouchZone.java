@@ -1,24 +1,31 @@
 /**
- * Creates a touchZone object that defines the location and size of a rectangular window.
+ * Creates a touchZone object that defines the location and size of a
+ * rectangular window.
+ * 
  * @author owen_vallis
- *
+ * 
  */
 public class TouchZone {
-	
-	private String zoneName;
+
+	private long zoneName;
 	private int x, y;
 	private int width, height;
-	
+
 	/**
 	 * Class constructor for a new zone
 	 * 
-	 * @param zoneName 	The string used to uniquely identify the zone
-	 * @param x			The x position on the screen passed in as pixels
-	 * @param y			The y position on the screen passed in as pixels
-	 * @param width		The width of the zone defined in pixels
-	 * @param height	The height of the zone defined in pixels
-	 */	
-	public TouchZone(String zoneName, int x, int y, int width, int height) {
+	 * @param zoneName
+	 *            The string used to uniquely identify the zone
+	 * @param x
+	 *            The x position on the screen passed in as pixels
+	 * @param y
+	 *            The y position on the screen passed in as pixels
+	 * @param width
+	 *            The width of the zone defined in pixels
+	 * @param height
+	 *            The height of the zone defined in pixels
+	 */
+	public TouchZone(long zoneName, int x, int y, int width, int height) {
 		this.zoneName = zoneName;
 		this.x = x;
 		this.y = y;
@@ -29,11 +36,11 @@ public class TouchZone {
 	// /////////////////////////////////////////////////////////////
 	// SET METHODS//////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
-	public String getZoneName() {
+	public long getZoneName() {
 		return zoneName;
 	}
 
-	public void setZoneName(String zoneName) {
+	public void setZoneName(long zoneName) {
 		this.zoneName = zoneName;
 	}
 

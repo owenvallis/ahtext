@@ -1,8 +1,6 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.util.Observable;
-import java.util.Observer;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -16,15 +14,15 @@ import processing.core.PFont;
 import processing.core.PGraphicsJava2D;
 
 /**
- * Draws a single Mandala node, enables the fade behavior, and returns the state of the trigger
+ * Draws a single Mandala node, enables the fade behavior, and returns the state
+ * of the trigger
  * 
  * @author jhochenbaum, ovallis, jmurphy, ddiakopoulos
- *
+ * 
  */
-public class MandalaNode implements Observer {
+public class MandalaNode implements TUIOObserver {
 
-
-	Observable observable;
+	TUIOSubject tuioHandler;
 	MandalaViewController mandalaViewController;
 	PApplet parent;
 	Graphics2D g2d;
@@ -32,92 +30,97 @@ public class MandalaNode implements Observer {
 	Font font;
 	Font fontBig;
 
-	//node fields
-	private int numberOfNodes; //*
-	private int nodePosition;  //*
-	private float nodeCenterX, nodeCenterY; //*
-	private float circleDiameter, circleRadius;  //* 
-	private float nodeDiameter, nodeRadius;		//********NT
-	private int nodeStrokeWeight;				//********NT
+	// node fields
+	private int numberOfNodes; // *
+	private int nodePosition; // *
+	private float nodeCenterX, nodeCenterY; // *
+	private float circleDiameter, circleRadius; // *
+	private float nodeDiameter, nodeRadius; // ********NT
+	private int nodeStrokeWeight; // ********NT
 
-	//node fade fields          				//********FB
+	// node fade fields //********FB
 	private float nodeFadeDiameter;
 	private int nodeFadeStrokeWeight;
 	private int lineFadeStrokeWeight;
 	private float fadeRate;
 
-	//node fade color fields					//********FB
+	// node fade color fields //********FB
 	private int red, redTemp, fadeStateRed;
 	private int green, greenTemp, fadeStateGreen;
 	private int blue, blueTemp, fadeStateBlue;
 	private int alpha, alphaTemp, fadeStateAlpha;
 
-
-	//TBar fade position holders				//********FB
-	private float spokeXA, spokeXB, spokeYA, spokeYB; //the spokes
-	private float tbarCounterClockwiseXA, tbarCounterClockwiseXB, tbarCounterClockwiseYA, tbarCounterClockwiseYB; //the spokes
-	private float tbarXA, tbarXB, tbarYA, tbarYB; //the spokes
+	// TBar fade position holders //********FB
+	private float spokeXA, spokeXB, spokeYA, spokeYB; // the spokes
+	private float tbarCounterClockwiseXA, tbarCounterClockwiseXB,
+			tbarCounterClockwiseYA, tbarCounterClockwiseYB; // the spokes
+	private float tbarXA, tbarXB, tbarYA, tbarYB; // the spokes
 	private float radiansOfNodeIntersect;
 	private boolean shouldFade;
 
-	//global pulse fields						//********FB
+	// global pulse fields //********FB
 	private float angle;
 	private float pulser;
 	private float pulsate;
 
-	//text
+	// text
 	private String nodeStoryName;
 	private float textXAlign, textYAlign;
 
-	//tuio input
+	// tuio input
 	private int cursorX, cursorY;
 
-	//Animation (trigger) Timer fields
+	// Animation (trigger) Timer fields
 	private int lastNodeTouchTime;
 	private int nodeTouchTime;
 	private boolean triggerActive;
 	private boolean animationActive;
 
-	public MandalaNode(Observable observable, MandalaViewController mandalaViewController, PApplet parent){
+	public MandalaNode(TUIOSubject tuioHandler,
+			MandalaViewController mandalaViewController, PApplet parent) {
 		// constructor
-		this.observable = observable;
-		observable.addObserver(this);
+		this.tuioHandler = tuioHandler;
+		tuioHandler.registerObserver(this);
 		this.mandalaViewController = mandalaViewController;
 		this.parent = parent;
-		
+
 		g2d = ((PGraphicsJava2D) this.parent.g).g2;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		black = new Color(0,0,0);
-		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));//TODO figure a way to adjust font size
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		black = new Color(0, 0, 0);
+		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));// TODO figure a
+																// way to adjust
+																// font size
 		fontBig = g2d.getFont();
 		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
 
-		//text fields
-		textXAlign = parent.width/2;
-		textYAlign = parent.height/20;
+		// text fields
+		textXAlign = parent.width / 2;
+		textYAlign = parent.height / 20;
 		pulser = (float) .015;
 		nodeStoryName = "default";
 
-		//node fields
-		numberOfNodes = 12; //TODO add number of nodes as field to pass in from view controller instead of hard setting
+		// node fields
+		numberOfNodes = 12; // TODO add number of nodes as field to pass in from
+							// view controller instead of hard setting
 		nodePosition = 0;
-		nodeCenterX = 0; 
+		nodeCenterX = 0;
 		nodeCenterY = 0;
-		circleDiameter = this.parent.height/(float)1.5;
-		circleRadius = circleDiameter/2;
-		nodeDiameter = this.parent.height/(float)10;
-		nodeRadius = nodeDiameter/2;
-		nodeStrokeWeight = this.parent.height/60;
+		circleDiameter = this.parent.height / (float) 1.5;
+		circleRadius = circleDiameter / 2;
+		nodeDiameter = this.parent.height / (float) 10;
+		nodeRadius = nodeDiameter / 2;
+		nodeStrokeWeight = this.parent.height / 60;
 
-		//node fade fields
-		nodeFadeDiameter = this.parent.height/(float)9;
+		// node fade fields
+		nodeFadeDiameter = this.parent.height / (float) 9;
 		nodeFadeStrokeWeight = this.parent.height / 36;
 		lineFadeStrokeWeight = this.parent.height / 30;
 		fadeRate = 4;
 		setRadiansOfNodeIntersect();
 		shouldFade = false;
 
-		//Animation(trigger) Timer fields
+		// Animation(trigger) Timer fields
 		nodeTouchTime = 4 * 1000;
 		triggerActive = false;
 		animationActive = false;
@@ -127,59 +130,76 @@ public class MandalaNode implements Observer {
 	// /////////////////////////////////////////////////////////////
 	// SET METHODS//////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
-	
-	public void storyName(){
+	public void tuioCursorAdded(long sessionID, int cursorX, int cursorY) {
+		if (over(nodeCenterX, nodeCenterY, cursorX, cursorY)) {
+			resetNodeTouchTimer();
+			shouldFade = true;
+			if (triggerActive) {
+				animationActive = true;
+			}
+		} else {
+			shouldFade = false;
+			resetNodeTouchTimer();
+			triggerActive = false;
+		}
+	}
+
+	public void tuioCursorUpdate(long sessionID, int cursorX, int cursorY) {
+		if (over(nodeCenterX, nodeCenterY, cursorX, cursorY)) {
+			resetNodeTouchTimer();
+			shouldFade = true;
+			if (triggerActive) {
+				animationActive = true;
+			}
+		} else {
+			shouldFade = false;
+			resetNodeTouchTimer();
+			triggerActive = false;
+		}
+	}
+
+	public void tuioCursorRemove(long sessionID) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void storyName() {
 		g2d.setColor(black);
 		g2d.setFont(fontBig);
 		paintHorizontallyCenteredText(g2d, nodeStoryName, textXAlign, 60);
 
 	}
-	
-	  protected void paintHorizontallyCenteredText(Graphics2D g2, String s,
-		      float centerX, float baselineY) {
-		    FontRenderContext frc = g2.getFontRenderContext();
-		    Rectangle2D bounds = g2.getFont().getStringBounds(s, frc);
-		    float width = (float) bounds.getWidth();
-		    g2.drawString(s, centerX - width / 2, baselineY);
-		  }
 
-	/**
-	 * takes in the updates from all sources
-	 */
-	public void update(Observable o, Object arg) {
-		if(o instanceof TuioHandler){
-			TuioHandler tuioHandler = (TuioHandler)o;
-			this.cursorX = tuioHandler.getCursorX();
-			this.cursorY = tuioHandler.getCursorY();
-			if(over(nodeCenterX, nodeCenterY, this.cursorX, this.cursorY)){
-				resetNodeTouchTimer(); 
-				shouldFade = true;
-				if(triggerActive){
-					animationActive = true;
-				}
-			} else {
-				shouldFade = false;
-				resetNodeTouchTimer(); 
-				triggerActive = false;
-			}
-		}
+	protected void paintHorizontallyCenteredText(Graphics2D g2, String s,
+			float centerX, float baselineY) {
+		FontRenderContext frc = g2.getFontRenderContext();
+		Rectangle2D bounds = g2.getFont().getStringBounds(s, frc);
+		float width = (float) bounds.getWidth();
+		g2.drawString(s, centerX - width / 2, baselineY);
 	}
 
 	/**
 	 * Test to see if TUIO event is over this particular node
 	 * 
-	 * @param nodePostionX the center of the node along the x-axis
-	 * @param nodePostionY the center of the node along the y-axis
-	 * @param x the current TUIO Coordinates
+	 * @param nodePostionX
+	 *            the center of the node along the x-axis
+	 * @param nodePostionY
+	 *            the center of the node along the y-axis
+	 * @param x
+	 *            the current TUIO Coordinates
 	 * @param y
 	 * 
 	 * @return whether the TUIO event is inside the Node
 	 */
-	boolean over(float nodePostionX,float nodePostionY, int x, int y) {
+	boolean over(float nodePostionX, float nodePostionY, int x, int y) {
 
-		float disX = (nodePostionX+(mandalaViewController.getxCenter()*mandalaViewController.getScaleFactor())) - x;
-		float disY = (nodePostionY+(mandalaViewController.getyCenter()*mandalaViewController.getScaleFactor())) - y;
-		if (Math.sqrt(Math.pow(disX,2) + Math.pow(disY,2)) < nodeRadius) {
+		float disX = (nodePostionX + (mandalaViewController.getxCenter() * mandalaViewController
+				.getScaleFactor()))
+				- x;
+		float disY = (nodePostionY + (mandalaViewController.getyCenter() * mandalaViewController
+				.getScaleFactor()))
+				- y;
+		if (Math.sqrt(Math.pow(disX, 2) + Math.pow(disY, 2)) < nodeRadius) {
 			return true;
 		} else {
 			return false;
@@ -196,12 +216,12 @@ public class MandalaNode implements Observer {
 	/**
 	 * Draw the Mandala node on the screen
 	 */
-	public void drawMandalaNode(){
+	public void drawMandalaNode() {
 		parent.fill(255);
 		parent.stroke(0);
 		parent.strokeWeight(nodeStrokeWeight);
 		parent.ellipseMode(PConstants.CENTER);
-		parent.ellipse(nodeCenterX, nodeCenterY, nodeDiameter, nodeDiameter);		
+		parent.ellipse(nodeCenterX, nodeCenterY, nodeDiameter, nodeDiameter);
 	}
 
 	/**
@@ -209,77 +229,97 @@ public class MandalaNode implements Observer {
 	 * 
 	 * @return whether or not the fade method should implement
 	 */
-	public void fadeOverlay(){
+	public void fadeOverlay() {
 		angle = angle + pulser;
 		pulsate = PApplet.abs(255 * PApplet.sin(angle));
 		drawFadeNode();
 		drawTBarFades();
-		if(parent.millis() - lastNodeTouchTime > nodeTouchTime) {
+		if (parent.millis() - lastNodeTouchTime > nodeTouchTime) {
 			triggerActive = true;
-			if(!animationActive){
+			if (!animationActive) {
 				g2d.setColor(black);
 				g2d.setFont(font);
-				paintHorizontallyCenteredText(g2d, "TOUCH", nodeCenterX, nodeCenterY+(parent.textWidth("G")/2));
+				paintHorizontallyCenteredText(g2d, "TOUCH", nodeCenterX,
+						nodeCenterY + (parent.textWidth("G") / 2));
 			}
 		}
 	}
 
 	/**
-	 * Set the node stroke weight and color, and draw the ellipse over the existing black node
+	 * Set the node stroke weight and color, and draw the ellipse over the
+	 * existing black node
 	 */
-	public void drawFadeNode() { //TODO figure out better way to extend to MandalaNodeCenter so this can remain private
+	public void drawFadeNode() { // TODO figure out better way to extend to
+									// MandalaNodeCenter so this can remain
+									// private
 		parent.strokeWeight(nodeFadeStrokeWeight);
 		defineFadeColor();
-		parent.ellipse(nodeCenterX, nodeCenterY, nodeFadeDiameter, nodeFadeDiameter);			
+		parent.ellipse(nodeCenterX, nodeCenterY, nodeFadeDiameter,
+				nodeFadeDiameter);
 	}
 
 	/**
-	 * Draws the InterNode connecting lines when an event is detected over the node
+	 * Draws the InterNode connecting lines when an event is detected over the
+	 * node
 	 */
 	private void drawTBarFades() {
-		//parent.stroke(0,0,0,this.alphaTemp  += fadeRate);
+		// parent.stroke(0,0,0,this.alphaTemp += fadeRate);
 		parent.strokeWeight(lineFadeStrokeWeight);
 		parent.line(spokeXA, spokeYA, spokeXB, spokeYB);
-		parent.line(tbarCounterClockwiseXA, tbarCounterClockwiseYA, tbarCounterClockwiseXB, tbarCounterClockwiseYB);
-		parent.line(tbarXA, tbarYA, tbarXB, tbarYB);		
+		parent.line(tbarCounterClockwiseXA, tbarCounterClockwiseYA,
+				tbarCounterClockwiseXB, tbarCounterClockwiseYB);
+		parent.line(tbarXA, tbarYA, tbarXB, tbarYB);
 	}
 
 	/**
 	 * Defines the color of the fade overlay effect
 	 * 
 	 * @param red
-	 * @param fadeStateRed whether fading is on or not
+	 * @param fadeStateRed
+	 *            whether fading is on or not
 	 * @param green
-	 * @param fadeStateGreen whether fading is on or not
+	 * @param fadeStateGreen
+	 *            whether fading is on or not
 	 * @param blue
-	 * @param fadeStateBlue whether fading is on or not
+	 * @param fadeStateBlue
+	 *            whether fading is on or not
 	 * @param alpha
-	 * @param fadeStateAlpha whether fading is on or not
+	 * @param fadeStateAlpha
+	 *            whether fading is on or not
 	 */
-	public void setFadeColor(int red, int fadeStateRed, int green, int fadeStateGreen, 
-			int blue, int fadeStateBlue,int alpha, int fadeStateAlpha){	
+	public void setFadeColor(int red, int fadeStateRed, int green,
+			int fadeStateGreen, int blue, int fadeStateBlue, int alpha,
+			int fadeStateAlpha) {
 
-		this.red = redTemp = red; 	this.fadeStateRed = fadeStateRed;
-		this.green = greenTemp = green; this.fadeStateGreen = fadeStateGreen;
-		this.blue = blueTemp = blue; 	this.fadeStateBlue = fadeStateBlue;
-		this.alpha = alphaTemp = alpha; this.fadeStateAlpha = fadeStateAlpha;
+		this.red = redTemp = red;
+		this.fadeStateRed = fadeStateRed;
+		this.green = greenTemp = green;
+		this.fadeStateGreen = fadeStateGreen;
+		this.blue = blueTemp = blue;
+		this.fadeStateBlue = fadeStateBlue;
+		this.alpha = alphaTemp = alpha;
+		this.fadeStateAlpha = fadeStateAlpha;
 	}
 
 	/**
-	 * Method implements the fade colors on the overlay stroke function
-	 * This is called in the draw loop of the fadeOverlay() method
+	 * Method implements the fade colors on the overlay stroke function This is
+	 * called in the draw loop of the fadeOverlay() method
 	 */
-	public void defineFadeColor(){
-		parent.stroke (this.redTemp += (fadeRate * this.fadeStateRed), this.greenTemp += (fadeRate * this.fadeStateGreen),
-				this.blueTemp  += (fadeRate * this.fadeStateBlue), this.alphaTemp  += (fadeRate * this.fadeStateAlpha)); //define the color
+	public void defineFadeColor() {
+		parent.stroke(this.redTemp += (fadeRate * this.fadeStateRed),
+				this.greenTemp += (fadeRate * this.fadeStateGreen),
+				this.blueTemp += (fadeRate * this.fadeStateBlue),
+				this.alphaTemp += (fadeRate * this.fadeStateAlpha)); // define
+																		// the
+																		// color
 	}
 
 	/**
 	 * Used to reset the fade colors back to transparent
 	 */
-	public void resetColors(){
+	public void resetColors() {
 		redTemp = red;
-		greenTemp = green; 
+		greenTemp = green;
 		blueTemp = blue;
 		alphaTemp = alpha;
 		angle = 0;
@@ -289,14 +329,16 @@ public class MandalaNode implements Observer {
 	// SETTERS AND GETTER///////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
 	/**
-	 * @param numberOfNodes sets the number of nodes along the circumference of the mandala
+	 * @param numberOfNodes
+	 *            sets the number of nodes along the circumference of the
+	 *            mandala
 	 */
 	public void setNumberOfNodes(int numberOfNodes) {
-		if(numberOfNodes > 0)
+		if (numberOfNodes > 0)
 			this.numberOfNodes = numberOfNodes;
 		else
 			this.numberOfNodes = 1;
-	}	
+	}
 
 	/**
 	 * @return the nodeRadius
@@ -306,7 +348,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodeRadius the nodeRadius to set
+	 * @param nodeRadius
+	 *            the nodeRadius to set
 	 */
 	public void setNodeRadius(float nodeRadius) {
 		this.nodeRadius = nodeRadius;
@@ -320,7 +363,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodeFadeStrokeWeight the nodeFadeStrokeWeight to set
+	 * @param nodeFadeStrokeWeight
+	 *            the nodeFadeStrokeWeight to set
 	 */
 	public void setNodeFadeStrokeWeight(int nodeFadeStrokeWeight) {
 		this.nodeFadeStrokeWeight = nodeFadeStrokeWeight;
@@ -334,7 +378,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeRate the fadeRate to set
+	 * @param fadeRate
+	 *            the fadeRate to set
 	 */
 	public void setFadeRate(float fadeRate) {
 		this.fadeRate = fadeRate;
@@ -348,7 +393,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param red the red to set
+	 * @param red
+	 *            the red to set
 	 */
 	public void setRed(int red) {
 		this.red = red;
@@ -362,7 +408,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param redTemp the redTemp to set
+	 * @param redTemp
+	 *            the redTemp to set
 	 */
 	public void setRedTemp(int redTemp) {
 		this.redTemp = redTemp;
@@ -376,7 +423,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeStateRed the fadeStateRed to set
+	 * @param fadeStateRed
+	 *            the fadeStateRed to set
 	 */
 	public void setFadeStateRed(int fadeStateRed) {
 		this.fadeStateRed = fadeStateRed;
@@ -390,7 +438,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param green the green to set
+	 * @param green
+	 *            the green to set
 	 */
 	public void setGreen(int green) {
 		this.green = green;
@@ -404,7 +453,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param greenTemp the greenTemp to set
+	 * @param greenTemp
+	 *            the greenTemp to set
 	 */
 	public void setGreenTemp(int greenTemp) {
 		this.greenTemp = greenTemp;
@@ -418,7 +468,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeStateGreen the fadeStateGreen to set
+	 * @param fadeStateGreen
+	 *            the fadeStateGreen to set
 	 */
 	public void setFadeStateGreen(int fadeStateGreen) {
 		this.fadeStateGreen = fadeStateGreen;
@@ -432,7 +483,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param blue the blue to set
+	 * @param blue
+	 *            the blue to set
 	 */
 	public void setBlue(int blue) {
 		this.blue = blue;
@@ -446,7 +498,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param blueTemp the blueTemp to set
+	 * @param blueTemp
+	 *            the blueTemp to set
 	 */
 	public void setBlueTemp(int blueTemp) {
 		this.blueTemp = blueTemp;
@@ -460,7 +513,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeStateBlue the fadeStateBlue to set
+	 * @param fadeStateBlue
+	 *            the fadeStateBlue to set
 	 */
 	public void setFadeStateBlue(int fadeStateBlue) {
 		this.fadeStateBlue = fadeStateBlue;
@@ -474,7 +528,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param alpha the alpha to set
+	 * @param alpha
+	 *            the alpha to set
 	 */
 	public void setAlpha(int alpha) {
 		this.alpha = alpha;
@@ -488,7 +543,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param alphaTemp the alphaTemp to set
+	 * @param alphaTemp
+	 *            the alphaTemp to set
 	 */
 	public void setAlphaTemp(int alphaTemp) {
 		this.alphaTemp = alphaTemp;
@@ -502,7 +558,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeStateAlpha the fadeStateAlpha to set
+	 * @param fadeStateAlpha
+	 *            the fadeStateAlpha to set
 	 */
 	public void setFadeStateAlpha(int fadeStateAlpha) {
 		this.fadeStateAlpha = fadeStateAlpha;
@@ -516,7 +573,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarCounterClockwiseXA the tbarCounterClockwiseXA to set
+	 * @param tbarCounterClockwiseXA
+	 *            the tbarCounterClockwiseXA to set
 	 */
 	public void setTbarCounterClockwiseXA(float tbarCounterClockwiseXA) {
 		this.tbarCounterClockwiseXA = tbarCounterClockwiseXA;
@@ -530,7 +588,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarCounterClockwiseXB the tbarCounterClockwiseXB to set
+	 * @param tbarCounterClockwiseXB
+	 *            the tbarCounterClockwiseXB to set
 	 */
 	public void setTbarCounterClockwiseXB(float tbarCounterClockwiseXB) {
 		this.tbarCounterClockwiseXB = tbarCounterClockwiseXB;
@@ -544,7 +603,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarCounterClockwiseYA the tbarCounterClockwiseYA to set
+	 * @param tbarCounterClockwiseYA
+	 *            the tbarCounterClockwiseYA to set
 	 */
 	public void setTbarCounterClockwiseYA(float tbarCounterClockwiseYA) {
 		this.tbarCounterClockwiseYA = tbarCounterClockwiseYA;
@@ -558,7 +618,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarCounterClockwiseYB the tbarCounterClockwiseYB to set
+	 * @param tbarCounterClockwiseYB
+	 *            the tbarCounterClockwiseYB to set
 	 */
 	public void setTbarCounterClockwiseYB(float tbarCounterClockwiseYB) {
 		this.tbarCounterClockwiseYB = tbarCounterClockwiseYB;
@@ -572,7 +633,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarXA the tbarXA to set
+	 * @param tbarXA
+	 *            the tbarXA to set
 	 */
 	public void setTbarXA(float tbarXA) {
 		this.tbarXA = tbarXA;
@@ -586,7 +648,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarXB the tbarXB to set
+	 * @param tbarXB
+	 *            the tbarXB to set
 	 */
 	public void setTbarXB(float tbarXB) {
 		this.tbarXB = tbarXB;
@@ -600,7 +663,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarYA the tbarYA to set
+	 * @param tbarYA
+	 *            the tbarYA to set
 	 */
 	public void setTbarYA(float tbarYA) {
 		this.tbarYA = tbarYA;
@@ -614,7 +678,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param tbarYB the tbarYB to set
+	 * @param tbarYB
+	 *            the tbarYB to set
 	 */
 	public void setTbarYB(float tbarYB) {
 		this.tbarYB = tbarYB;
@@ -628,7 +693,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param radiansOfNodeIntersect the radiansOfNodeIntersect to set
+	 * @param radiansOfNodeIntersect
+	 *            the radiansOfNodeIntersect to set
 	 */
 	public void setRadiansOfNodeIntersect(float radiansOfNodeIntersect) {
 		this.radiansOfNodeIntersect = radiansOfNodeIntersect;
@@ -642,7 +708,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param shouldFade the shouldFade to set
+	 * @param shouldFade
+	 *            the shouldFade to set
 	 */
 	public void setShouldFade(boolean shouldFade) {
 		this.shouldFade = shouldFade;
@@ -656,7 +723,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param angle the angle to set
+	 * @param angle
+	 *            the angle to set
 	 */
 	public void setAngle(float angle) {
 		this.angle = angle;
@@ -670,7 +738,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param pulser the pulser to set
+	 * @param pulser
+	 *            the pulser to set
 	 */
 	public void setPulser(float pulser) {
 		this.pulser = pulser;
@@ -684,7 +753,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param pulsate the pulsate to set
+	 * @param pulsate
+	 *            the pulsate to set
 	 */
 	public void setPulsate(float pulsate) {
 		this.pulsate = pulsate;
@@ -698,7 +768,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param textXAlign the textXAlign to set
+	 * @param textXAlign
+	 *            the textXAlign to set
 	 */
 	public void setTextXAlign(float textXAlign) {
 		this.textXAlign = textXAlign;
@@ -712,7 +783,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param textYAlign the textYAlign to set
+	 * @param textYAlign
+	 *            the textYAlign to set
 	 */
 	public void setTextYAlign(float textYAlign) {
 		this.textYAlign = textYAlign;
@@ -726,7 +798,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param cursorX the cursorX to set
+	 * @param cursorX
+	 *            the cursorX to set
 	 */
 	public void setCursorX(int cursorX) {
 		this.cursorX = cursorX;
@@ -740,7 +813,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param cursorY the cursorY to set
+	 * @param cursorY
+	 *            the cursorY to set
 	 */
 	public void setCursorY(int cursorY) {
 		this.cursorY = cursorY;
@@ -761,7 +835,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodeStrokeWeight the nodeStrokeWeight to set
+	 * @param nodeStrokeWeight
+	 *            the nodeStrokeWeight to set
 	 */
 	public void setNodeStrokeWeight(int nodeStrokeWeight) {
 		this.nodeStrokeWeight = nodeStrokeWeight;
@@ -775,7 +850,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodePosition sets the position in the Mandala
+	 * @param nodePosition
+	 *            sets the position in the Mandala
 	 */
 	public void setNodePosition(int nodePosition) {
 		this.nodePosition = nodePosition;
@@ -793,19 +869,22 @@ public class MandalaNode implements Observer {
 	/**
 	 * Set the Node position center X and Y coordinates
 	 */
-	private void setNodeCenter(){
-		this.nodeCenterX = PApplet.cos(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* circleRadius;
-		this.nodeCenterY = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* circleRadius;
+	private void setNodeCenter() {
+		this.nodeCenterX = PApplet.cos(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* circleRadius;
+		this.nodeCenterY = PApplet.sin(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* circleRadius;
 	}
 
 	/**
-	 * @param circleDiameter the circleDiameter to set
+	 * @param circleDiameter
+	 *            the circleDiameter to set
 	 */
 	public void setCircleDiameter(float circleDiameter) {
 		this.circleDiameter = circleDiameter;
-		this.circleRadius = circleDiameter/2;
+		this.circleRadius = circleDiameter / 2;
 	}
 
 	/**
@@ -823,33 +902,38 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param circleRadius the circleRadius to set
+	 * @param circleRadius
+	 *            the circleRadius to set
 	 */
 	public void setCircleRadius(float circleRadius) {
 		this.circleRadius = circleRadius;
 	}
 
 	/**
-	 * @param nodeCenterX the nodeCenterX to set
+	 * @param nodeCenterX
+	 *            the nodeCenterX to set
 	 */
 	public void setNodeCenterX(float nodeCenterX) {
 		this.nodeCenterX = nodeCenterX;
-	}		
+	}
 
 	/**
-	 * @param nodeCenterY the nodeCenterY to set
+	 * @param nodeCenterY
+	 *            the nodeCenterY to set
 	 */
 	public void setNodeCenterY(float nodeCenterY) {
 		this.nodeCenterY = nodeCenterY;
-	}		
+	}
 
 	/**
-	 * @param nodeDiameter the diameter of the node
+	 * @param nodeDiameter
+	 *            the diameter of the node
 	 */
 	public void setNodeDiameter(float nodeDiameter) {
 		this.nodeDiameter = nodeDiameter;
-		this.nodeRadius = nodeDiameter/2;
+		this.nodeRadius = nodeDiameter / 2;
 	}
+
 	/**
 	 * @return the nodeDiameter
 	 */
@@ -858,7 +942,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodeStrokeWeight the width of the ellipse stroke
+	 * @param nodeStrokeWeight
+	 *            the width of the ellipse stroke
 	 */
 	public void setnodeStrokeWeight(int nodeStrokeWeight) {
 		this.nodeStrokeWeight = nodeStrokeWeight;
@@ -872,7 +957,9 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param fadeRate the rate at which the fade overlay will increment towards full color
+	 * @param fadeRate
+	 *            the rate at which the fade overlay will increment towards full
+	 *            color
 	 */
 	public void setfadeRate(float fadeRate) {
 		this.fadeRate = fadeRate;
@@ -886,7 +973,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param nodeFadeDiameter the nodeFadeDiameter to set
+	 * @param nodeFadeDiameter
+	 *            the nodeFadeDiameter to set
 	 */
 	public void setNodeFadeDiameter(float nodeFadeDiameter) {
 		this.nodeFadeDiameter = nodeFadeDiameter;
@@ -900,7 +988,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param spokeXA the spokeXA to set
+	 * @param spokeXA
+	 *            the spokeXA to set
 	 */
 	public void setSpokeXA(float spokeXA) {
 		this.spokeXA = spokeXA;
@@ -914,7 +1003,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param spokeXB the spokeXB to set
+	 * @param spokeXB
+	 *            the spokeXB to set
 	 */
 	public void setSpokeXB(float spokeXB) {
 		this.spokeXB = spokeXB;
@@ -928,7 +1018,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param spokeYA the spokeYA to set
+	 * @param spokeYA
+	 *            the spokeYA to set
 	 */
 	public void setSpokeYA(float spokeYA) {
 		this.spokeYA = spokeYA;
@@ -942,7 +1033,8 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param spokeYB the spokeYB to set
+	 * @param spokeYB
+	 *            the spokeYB to set
 	 */
 	public void setSpokeYB(float spokeYB) {
 		this.spokeYB = spokeYB;
@@ -956,62 +1048,92 @@ public class MandalaNode implements Observer {
 	}
 
 	/**
-	 * @param lineFadeStrokeWeight the lineFadeStrokeWeight to set
+	 * @param lineFadeStrokeWeight
+	 *            the lineFadeStrokeWeight to set
 	 */
 	public void setLineFadeStrokeWeight(int lineFadeStrokeWeight) {
 		this.lineFadeStrokeWeight = lineFadeStrokeWeight;
 	}
 
 	/**
-	 * sets the draw coordinates for the tbar connector segments of the fade method
+	 * sets the draw coordinates for the tbar connector segments of the fade
+	 * method
 	 */
-	private void setTBarPositions(){
-		//Calculate coordinates for center spoke lines
-		this.spokeXA = PApplet.cos(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* nodeFadeDiameter/(float)1.85;
-		this.spokeYA = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* nodeFadeDiameter/(float)1.85;	
+	private void setTBarPositions() {
+		// Calculate coordinates for center spoke lines
+		this.spokeXA = PApplet.cos(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* nodeFadeDiameter / (float) 1.85;
+		this.spokeYA = PApplet.sin(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* nodeFadeDiameter / (float) 1.85;
 
-		this.spokeXB = PApplet.cos(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* (circleRadius-(nodeFadeDiameter/(float)1.85));
-		this.spokeYB = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes))))
-		* (circleRadius-(nodeFadeDiameter/(float)1.85));
+		this.spokeXB = PApplet.cos(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* (circleRadius - (nodeFadeDiameter / (float) 1.85));
+		this.spokeYB = PApplet.sin(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes))))
+				* (circleRadius - (nodeFadeDiameter / (float) 1.85));
 
-		//Calculate coordinates for Node-Connect lines
+		// Calculate coordinates for Node-Connect lines
 		// 0.995 = scales the diameter screenheight / 2.985
-		//counterclockwise Tbar segment
-		this.tbarCounterClockwiseXA = PApplet.cos(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes)))+radiansOfNodeIntersect)
-		* circleRadius;
-		this.tbarCounterClockwiseYA = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes)))+radiansOfNodeIntersect)
-		* circleRadius;
+		// counterclockwise Tbar segment
+		this.tbarCounterClockwiseXA = PApplet.cos(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes)))
+				+ radiansOfNodeIntersect)
+				* circleRadius;
+		this.tbarCounterClockwiseYA = PApplet.sin(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes)))
+				+ radiansOfNodeIntersect)
+				* circleRadius;
 
-		this.tbarCounterClockwiseXB = PApplet.cos(PApplet.radians((float) ((nodePosition+1) * (360.0 / numberOfNodes)))-radiansOfNodeIntersect)
-		* circleRadius;
-		this.tbarCounterClockwiseYB = PApplet.sin(PApplet.radians((float) ((nodePosition+1) * (360.0 / numberOfNodes)))-radiansOfNodeIntersect)
-		* circleRadius;	
+		this.tbarCounterClockwiseXB = PApplet
+				.cos(PApplet
+						.radians((float) ((nodePosition + 1) * (360.0 / numberOfNodes)))
+						- radiansOfNodeIntersect)
+				* circleRadius;
+		this.tbarCounterClockwiseYB = PApplet
+				.sin(PApplet
+						.radians((float) ((nodePosition + 1) * (360.0 / numberOfNodes)))
+						- radiansOfNodeIntersect)
+				* circleRadius;
 
-		//clockwise Tbar segment
-		this.tbarXA = PApplet.cos(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes)))-radiansOfNodeIntersect)
-		* circleRadius;
-		this.tbarYA = PApplet.sin(PApplet.radians((float) (nodePosition * (360.0 / numberOfNodes)))-radiansOfNodeIntersect)
-		* circleRadius;
+		// clockwise Tbar segment
+		this.tbarXA = PApplet.cos(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes)))
+				- radiansOfNodeIntersect)
+				* circleRadius;
+		this.tbarYA = PApplet.sin(PApplet
+				.radians((float) (nodePosition * (360.0 / numberOfNodes)))
+				- radiansOfNodeIntersect)
+				* circleRadius;
 
-		this.tbarXB = PApplet.cos(PApplet.radians((float) (((nodePosition+(numberOfNodes-1))%numberOfNodes) * (360.0 / numberOfNodes)))+radiansOfNodeIntersect)
-		* circleRadius;
-		this.tbarYB = PApplet.sin(PApplet.radians((float) (((nodePosition+(numberOfNodes-1))%numberOfNodes) * (360.0 / numberOfNodes)))+radiansOfNodeIntersect)
-		* circleRadius;
+		this.tbarXB = PApplet
+				.cos(PApplet
+						.radians((float) (((nodePosition + (numberOfNodes - 1)) % numberOfNodes) * (360.0 / numberOfNodes)))
+						+ radiansOfNodeIntersect)
+				* circleRadius;
+		this.tbarYB = PApplet
+				.sin(PApplet
+						.radians((float) (((nodePosition + (numberOfNodes - 1)) % numberOfNodes) * (360.0 / numberOfNodes)))
+						+ radiansOfNodeIntersect)
+				* circleRadius;
 	}
 
 	/**
-	 * Sets the position that the node intersects along the circumference of the larger mandala circle
+	 * Sets the position that the node intersects along the circumference of the
+	 * larger mandala circle
 	 */
 	private void setRadiansOfNodeIntersect() {
-		//radiansOfNodeIntersect = (float)((2.3*(Math.asin(((nodeRadius))/circleDiameter))));	
-		radiansOfNodeIntersect = (float)((2.325*(Math.asin(((nodeRadius))/circleDiameter))));
+		// radiansOfNodeIntersect =
+		// (float)((2.3*(Math.asin(((nodeRadius))/circleDiameter))));
+		radiansOfNodeIntersect = (float) ((2.325 * (Math.asin(((nodeRadius))
+				/ circleDiameter))));
 	}
 
 	/**
-	 * @param nodeStoryName the nodeStoryName to set
+	 * @param nodeStoryName
+	 *            the nodeStoryName to set
 	 */
 	public void setNodeStoryName(String nodeStoryName) {
 		this.nodeStoryName = nodeStoryName;
@@ -1023,7 +1145,6 @@ public class MandalaNode implements Observer {
 	public String getNodeStoryName() {
 		return nodeStoryName;
 	}
-
 
 	public int getLastNodeTouchTime() {
 		return lastNodeTouchTime;
@@ -1057,4 +1178,3 @@ public class MandalaNode implements Observer {
 		this.animationActive = animationActive;
 	}
 }
-

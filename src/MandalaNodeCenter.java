@@ -1,4 +1,3 @@
-import java.util.Observable;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -27,9 +26,9 @@ public final class MandalaNodeCenter extends MandalaNode {
 	
 	private float[][] mandalaSpokeLineCoordinates = new float[12][4];
 
-	public MandalaNodeCenter(Observable observable, MandalaViewController mandalaViewController, PApplet parent){
+	public MandalaNodeCenter(TUIOSubject tuioHandler, MandalaViewController mandalaViewController, PApplet parent){
 		//constructor
-		super(observable, mandalaViewController, parent);
+		super(tuioHandler, mandalaViewController, parent);
 		super.setNodeCenterX(0);
 		super.setNodeCenterY(0);
 		this.mandalaViewController = mandalaViewController;

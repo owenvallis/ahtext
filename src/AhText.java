@@ -1,5 +1,3 @@
-
-
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import fullscreen.FullScreen;
@@ -60,7 +58,6 @@ public class AhText extends PApplet {
 			textViewController.displayText();  
 			mandalaViewController.resetMandala();  		//TODO needs to only happen once
 			mandalaViewController.grow = (float)0.0;	//TODO add into resetMandala
-			tuioHandler.killZones();
 			} else{
 			textViewController.resetFallText();			//TODO needs to only happen once
 			if(mandalaViewController.grow < 1.0){
@@ -78,7 +75,6 @@ public class AhText extends PApplet {
 	public void mousePressed(){
 		tuioHandler.setCursorX(mouseX);
 		tuioHandler.setCursorY(mouseY);
-		tuioHandler.setSessionID(1);
 		tuioHandler.mouseEventsChanged();		
 	}
 }
