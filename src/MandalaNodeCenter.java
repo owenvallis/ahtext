@@ -1,8 +1,15 @@
 import java.util.Observable;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+import processing.core.PGraphicsJava2D;
 
 /**
  * Draws the center Mandala node, enables the fade behavior, and returns the state of the trigger
@@ -13,16 +20,25 @@ import processing.core.PFont;
 public final class MandalaNodeCenter extends MandalaNode {
 	
 	MandalaViewController mandalaViewController;
-	PFont mandalaFont;
+	Graphics2D g2d;
+	Color black;
+	Font font;
+	Font fontBig;
+	
 	private float[][] mandalaSpokeLineCoordinates = new float[12][4];
 
-	public MandalaNodeCenter(Observable observable, MandalaViewController mandalaViewController, PApplet parent, PFont mandalaFont){
+	public MandalaNodeCenter(Observable observable, MandalaViewController mandalaViewController, PApplet parent){
 		//constructor
-		super(observable, mandalaViewController, parent, mandalaFont);
+		super(observable, mandalaViewController, parent);
 		super.setNodeCenterX(0);
 		super.setNodeCenterY(0);
 		this.mandalaViewController = mandalaViewController;
-		this.mandalaFont = mandalaFont;
+		g2d = ((PGraphicsJava2D) this.parent.g).g2;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		black = new Color(0,0,0);
+		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));//TODO figure a way to adjust font size
+		fontBig = g2d.getFont();
+		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
 		setTBarPositions();
 
 
@@ -52,26 +68,31 @@ public final class MandalaNodeCenter extends MandalaNode {
 
 		}
 	}
+	
+	public void storyName(){
+		g2d.setColor(black);
+		g2d.setFont(fontBig);
+		paintHorizontallyCenteredText(g2d, super.getNodeStoryName(), super.getTextXAlign(), 60);
+
+	}
 
 	/**
 	 * Draws the color fade overlay once a mandala is touched
 	 * 
 	 * @return whether or not the fade method should implement
 	 */
+	@Override
 	public void fadeOverlay(){
 		super.setAngle(super.getAngle() + super.getPulser());
 		super.setPulsate(PApplet.abs(255 * PApplet.sin(super.getAngle())));
 		drawTBarFades();
 		super.drawFadeNode();
-		this.parent.textFont(mandalaFont);
-		this.parent.textAlign(PConstants.CENTER);
-		parent.fill(0, 0, 0, super.getPulsate());
-		parent.text(super.getNodeStoryName(), super.getTextXAlign(), super.getTextYAlign());
 		if(parent.millis() - super.getLastNodeTouchTime() > super.getNodeTouchTime()) {
 			super.setTriggerActive(true);
 			if(!super.isAnimationActive()){
-				parent.textSize(24);
-				parent.text("Touch",super.getNodeCenterX()+mandalaViewController.getxCenter(), (super.getNodeCenterY()+mandalaViewController.getyCenter())+(parent.textWidth("G")/2));
+				g2d.setColor(black);
+				g2d.setFont(font);
+				paintHorizontallyCenteredText(g2d, "TOUCH", super.getNodeCenterX(), super.getNodeCenterY()+(parent.textWidth("G")/2));
 			}
 		}
 	}
@@ -91,6 +112,14 @@ public final class MandalaNodeCenter extends MandalaNode {
 			parent.line(super.getSpokeXA(), super.getSpokeYA(), super.getSpokeXB(), super.getSpokeYB());		
 		}
 	}
+	
+	  protected void paintHorizontallyCenteredText(Graphics2D g2, String s,
+		      float centerX, float baselineY) {
+		    FontRenderContext frc = g2.getFontRenderContext();
+		    Rectangle2D bounds = g2.getFont().getStringBounds(s, frc);
+		    float width = (float) bounds.getWidth();
+		    g2.drawString(s, centerX - width / 2, baselineY);
+		  }
 
 
 }

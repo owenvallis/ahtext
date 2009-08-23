@@ -1,6 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PFont;
-import processing.video.Movie;
+import processing.core.PGraphics;
 
 
 
@@ -11,25 +11,32 @@ public class MandalaViewController {
 	MandalaNodeCenter mandalaNodeCenter;
 	MandalaNode[] mandalaNodeList;
 	PFont mandalaFont;
-	Movie myMovie;
+	PGraphics pg;
+	ExplodingText explodingText;
+	CreateZones createZones;
+
 
 
 
 	private float xCenter, yCenter;
 	private float scaleFactor;
 	public float grow;
+	public float largeCircleStroke;
 
-	public MandalaViewController(TuioHandler tuioHandler, PApplet parent, TextViewController textViewController, Movie myMovie){
+	public MandalaViewController(TuioHandler tuioHandler, PApplet parent, TextViewController textViewController, PGraphics pg){
 		this.tuioHandler = tuioHandler;
 		this.parent = parent;
-		this.myMovie = myMovie;
+		this.pg = pg;
+		createZones = new CreateZones(tuioHandler, parent);
+		largeCircleStroke = parent.height/37;
 		mandalaFont = this.parent.loadFont("AvantGuard-30.vlw");
-		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent, mandalaFont);
+		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent);
+		explodingText = new ExplodingText(pg, this.parent, textViewController);
 		mandalaNodeCenter.setFadeColor(100, 1, 0, 0, 0, 0, 100, 1);
 		mandalaNodeCenter.setNodeStoryName("the story of being invisible");
 		mandalaNodeList = new MandalaNode[12]; //TODO fix to number of nodes
 		for(int i = 0; i < 12; i++){
-			mandalaNodeList[i] = new MandalaNode(this.tuioHandler, this, parent, mandalaFont);
+			mandalaNodeList[i] = new MandalaNode(this.tuioHandler, this, parent);
 			mandalaNodeList[i].setNodePosition(i);
 		}
 		mandalaNodeList[0].setFadeColor(100, 1, 180, 0, 100, 1, 100, 1);
@@ -115,28 +122,43 @@ public class MandalaViewController {
 	 * 
 	 */
 	public void displayMandala(){
-		parent.frameRate(30);
-		parent.smooth();
-		parent.background(255);
-		movieEvent(myMovie);
-		parent.image(myMovie, 0, 0);
+		parent.frameRate(120);
+		//parent.background(255); not needed because we draw background in the explode draw method
+		explodingText.drawXplode();
+		if(mandalaNodeCenter.isAnimationActive()){
+			createZones.displayAllAcitiveRectangles();
+		}
+		for(int i = 0; i < 12; i++){
+			if(mandalaNodeList[i].isAnimationActive()){
+				createZones.displayAllAcitiveRectangles();
+
+			}
+		}
+		if(mandalaNodeCenter.isShouldFade()){
+			mandalaNodeCenter.storyName();
+		}
+		for(int i = 0; i < 12; i++){
+		if(mandalaNodeList[i].isShouldFade()){
+			mandalaNodeList[i].storyName();
+		}
+		}
 		parent.translate(xCenter*scaleFactor, yCenter*scaleFactor);
 		parent.scale(scaleFactor*grow);
 		parent.fill(255);
 		parent.stroke(0);
-		parent.strokeWeight(parent.height/37); // TODO This might extend MandalaNode, but we don't think so as it needs no additional behaviors
-		parent.ellipse(0,0,parent.height/(float)1.5,parent.height/(float)1.5);
+		parent.strokeWeight(largeCircleStroke);
+		parent.ellipse(0,0,mandalaNodeCenter.getCircleDiameter(),mandalaNodeCenter.getCircleDiameter());
 		mandalaNodeCenter.drawMandalaNode();
 		if(mandalaNodeCenter.isShouldFade()){
 			mandalaNodeCenter.fadeOverlay();
 		} else {
-			mandalaNodeCenter.resetColors();
+			mandalaNodeCenter.resetColors();//TODO needs to only be called once not every loop
 		}
 		if(mandalaNodeCenter.isAnimationActive()){
-			tuioHandler.deleteObservers();
+			tuioHandler.deleteObservers();//TODO needs to only be called once not every loop
 			if(scaleFactor > .1){
 				scaleFactor -= .05;
-			} 
+			}		
 		}
 		for(int i = 0; i < 12; i++){
 			mandalaNodeList[i].drawMandalaNode();
@@ -152,6 +174,7 @@ public class MandalaViewController {
 				if(scaleFactor > .1){
 					scaleFactor -= .05;
 				} 
+				createZones.displayAllAcitiveRectangles();
 			}
 		}
 	}
@@ -172,7 +195,4 @@ public class MandalaViewController {
 		}
 	}
 
-	void movieEvent(Movie m) {
-		  m.read();
-		}
 }

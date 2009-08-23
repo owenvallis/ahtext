@@ -1,9 +1,19 @@
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
 import java.util.Observable;
 import java.util.Observer;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
+import processing.core.PGraphicsJava2D;
 
 /**
  * Draws a single Mandala node, enables the fade behavior, and returns the state of the trigger
@@ -17,37 +27,40 @@ public class MandalaNode implements Observer {
 	Observable observable;
 	MandalaViewController mandalaViewController;
 	PApplet parent;
-	PFont mandalaFont;
+	Graphics2D g2d;
+	Color black;
+	Font font;
+	Font fontBig;
 
 	//node fields
-	private int numberOfNodes;
-	private int nodePosition;
-	private float nodeCenterX, nodeCenterY;
-	private float circleDiameter, circleRadius;
-	private float nodeDiameter, nodeRadius;
-	private int nodeStrokeWeight;
+	private int numberOfNodes; //*
+	private int nodePosition;  //*
+	private float nodeCenterX, nodeCenterY; //*
+	private float circleDiameter, circleRadius;  //* 
+	private float nodeDiameter, nodeRadius;		//********NT
+	private int nodeStrokeWeight;				//********NT
 
-	//node fade fields
+	//node fade fields          				//********FB
 	private float nodeFadeDiameter;
 	private int nodeFadeStrokeWeight;
 	private int lineFadeStrokeWeight;
 	private float fadeRate;
 
-	//node fade color fields
+	//node fade color fields					//********FB
 	private int red, redTemp, fadeStateRed;
 	private int green, greenTemp, fadeStateGreen;
 	private int blue, blueTemp, fadeStateBlue;
 	private int alpha, alphaTemp, fadeStateAlpha;
 
 
-	//TBar fade position holders
+	//TBar fade position holders				//********FB
 	private float spokeXA, spokeXB, spokeYA, spokeYB; //the spokes
 	private float tbarCounterClockwiseXA, tbarCounterClockwiseXB, tbarCounterClockwiseYA, tbarCounterClockwiseYB; //the spokes
 	private float tbarXA, tbarXB, tbarYA, tbarYB; //the spokes
 	private float radiansOfNodeIntersect;
 	private boolean shouldFade;
 
-	//global pulse fields
+	//global pulse fields						//********FB
 	private float angle;
 	private float pulser;
 	private float pulsate;
@@ -65,13 +78,19 @@ public class MandalaNode implements Observer {
 	private boolean triggerActive;
 	private boolean animationActive;
 
-	public MandalaNode(Observable observable, MandalaViewController mandalaViewController, PApplet parent, PFont mandalaFont){
+	public MandalaNode(Observable observable, MandalaViewController mandalaViewController, PApplet parent){
 		// constructor
 		this.observable = observable;
 		observable.addObserver(this);
 		this.mandalaViewController = mandalaViewController;
 		this.parent = parent;
-		this.mandalaFont = mandalaFont;
+		
+		g2d = ((PGraphicsJava2D) this.parent.g).g2;
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		black = new Color(0,0,0);
+		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));//TODO figure a way to adjust font size
+		fontBig = g2d.getFont();
+		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
 
 		//text fields
 		textXAlign = parent.width/2;
@@ -108,6 +127,21 @@ public class MandalaNode implements Observer {
 	// /////////////////////////////////////////////////////////////
 	// SET METHODS//////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
+	
+	public void storyName(){
+		g2d.setColor(black);
+		g2d.setFont(fontBig);
+		paintHorizontallyCenteredText(g2d, nodeStoryName, textXAlign, 60);
+
+	}
+	
+	  protected void paintHorizontallyCenteredText(Graphics2D g2, String s,
+		      float centerX, float baselineY) {
+		    FontRenderContext frc = g2.getFontRenderContext();
+		    Rectangle2D bounds = g2.getFont().getStringBounds(s, frc);
+		    float width = (float) bounds.getWidth();
+		    g2.drawString(s, centerX - width / 2, baselineY);
+		  }
 
 	/**
 	 * takes in the updates from all sources
@@ -180,15 +214,12 @@ public class MandalaNode implements Observer {
 		pulsate = PApplet.abs(255 * PApplet.sin(angle));
 		drawFadeNode();
 		drawTBarFades();
-		this.parent.textFont(mandalaFont);
-		this.parent.textAlign(PConstants.CENTER);
-		parent.fill(0, 0, 0, pulsate);
-		parent.text(nodeStoryName, textXAlign, textYAlign);		
 		if(parent.millis() - lastNodeTouchTime > nodeTouchTime) {
 			triggerActive = true;
 			if(!animationActive){
-				parent.textSize(24);
-				parent.text("Touch",nodeCenterX+mandalaViewController.getxCenter(), (nodeCenterY+mandalaViewController.getyCenter())+(parent.textWidth("G")/2));
+				g2d.setColor(black);
+				g2d.setFont(font);
+				paintHorizontallyCenteredText(g2d, "TOUCH", nodeCenterX, nodeCenterY+(parent.textWidth("G")/2));
 			}
 		}
 	}
@@ -266,20 +297,6 @@ public class MandalaNode implements Observer {
 		else
 			this.numberOfNodes = 1;
 	}	
-
-	/**
-	 * @return the mandalaFont
-	 */
-	public PFont getMandalaFont() {
-		return mandalaFont;
-	}
-
-	/**
-	 * @param mandalaFont the mandalaFont to set
-	 */
-	public void setMandalaFont(PFont mandalaFont) {
-		this.mandalaFont = mandalaFont;
-	}
 
 	/**
 	 * @return the nodeRadius
