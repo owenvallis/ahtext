@@ -1,3 +1,4 @@
+import oscP5.OscMessage;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import fullscreen.FullScreen;
@@ -12,12 +13,13 @@ public class AhText extends PApplet {
 	PGraphics pg;
 
 	TuioHandler tuioHandler;
+	OSCHandler oscHandler;
 	TextViewController textViewController;
 	MandalaViewController mandalaViewController;
-	
+
 	final static int notouchTime = 30 * 1000;               // how many ms to wait before restarting the falling text
 
-	
+
 	/**
 	 * @param args
 	 */
@@ -25,24 +27,25 @@ public class AhText extends PApplet {
 		PApplet.main(new String[] { "AhText" });	
 	}
 
-	
-	
-	
+
+
+
 	@Override
 	public void setup() {
 
 		size(screen.width, screen.height, JAVA2D);
 		pg = createGraphics(screen.width, screen.height, P2D); // off screen render buffer
-		
+
 		// add fullscreen support for osx to hide top menu bar
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
-		//fs.enter();
-		
+		//fs.enter();  /******comment out to kill fullscreen*****/
+
 		// create main program controllers
 		tuioHandler = new TuioHandler(this);
+		oscHandler = new OSCHandler(this);
 		textViewController = new TextViewController(this, pg);
-		mandalaViewController = new MandalaViewController(tuioHandler, this, textViewController, pg);
+		mandalaViewController = new MandalaViewController(tuioHandler, this, textViewController, pg, oscHandler);
 
 
 		tuioHandler.setLastTouchTime(-(notouchTime+1)); //Hack by making the number negative to make the "millis() - tuioHandler.getLastTouchTime()" come out to a positive number the first time
@@ -55,19 +58,30 @@ public class AhText extends PApplet {
 	public void draw() {
 
 		if(millis() - tuioHandler.getLastTouchTime() > notouchTime) {
+			//Pack and send OSC			
+			OscMessage myMessage = new OscMessage("/mode");
+			myMessage.add(0);
+			oscHandler.sendOSCMessage(myMessage);
+
 			textViewController.displayText();  
 			mandalaViewController.resetMandala();  		//TODO needs to only happen once
 			mandalaViewController.grow = (float)0.0;	//TODO add into resetMandala
-			} else{
+		} else{
 			textViewController.resetFallText();			//TODO needs to only happen once
 			if(mandalaViewController.grow < 1.0){
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/mode");
+				myMessage.add(1);
+				oscHandler.sendOSCMessage(myMessage);
 				mandalaViewController.grow += 0.009;
 			}
 			mandalaViewController.displayMandala();
+			
+			
 		}
 	}
-	
-	
+
+
 	/**
 	 * Overriding the default mousePressed method in processing to notify listeners
 	 */
@@ -75,6 +89,26 @@ public class AhText extends PApplet {
 	public void mousePressed(){
 		tuioHandler.setCursorX(mouseX);
 		tuioHandler.setCursorY(mouseY);
-		tuioHandler.mouseEventsChanged();		
+		tuioHandler.mouseEventsClicked();
+	}
+
+	/**
+	 * Overriding the default mouseDragged method in processing to notify listeners
+	 */
+	@Override
+	public void mouseDragged(){
+		tuioHandler.setCursorX(mouseX);
+		tuioHandler.setCursorY(mouseY);
+		tuioHandler.mouseEventsDragged();		
+	}
+
+	/**
+	 * Overriding the default mouseDragged method in processing to notify listeners
+	 */
+	@Override
+	public void mouseReleased(){
+		tuioHandler.setCursorX(mouseX);
+		tuioHandler.setCursorY(mouseY);
+		tuioHandler.mouseEventsReleased();		
 	}
 }

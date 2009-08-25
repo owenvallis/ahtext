@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+
+import oscP5.OscMessage;
 import processing.core.PApplet;
 
 public class ZoneCollection implements TUIOObserver {
@@ -9,27 +11,28 @@ public class ZoneCollection implements TUIOObserver {
 	private int touchEventIsInsideThisZone;
 	@SuppressWarnings("unused")
 	private TUIOSubject tuioHandler;
+	OSCHandler oscHandler;
 
 	ArrayList<TouchZone> tzones;
-	long[] sessionIDs;
+	ArrayList<Long> sessionIDs;
 
 	/**
 	 * Class constructor for a new collection of active zones
 	 * 
 	 */
-	public ZoneCollection(PApplet parent, TUIOSubject tuioHandler) {
+	public ZoneCollection(PApplet parent, TUIOSubject tuioHandler, OSCHandler oscHandler) {
 		this.parent = parent;
 		this.tzones = new ArrayList<TouchZone>();
-		this.sessionIDs = new long[0];
+		this.sessionIDs = new ArrayList<Long>();
 		this.tuioHandler = tuioHandler;
+		this.oscHandler = oscHandler;
 	}
 
 	public void tuioCursorAdded(long sessionID, int cursorX, int cursorY) {
 		createNewZone(sessionID, cursorX, cursorY, 200, 300);
 	}
-	
+
 	public void tuioCursorUpdate(long sessionID, int cursorX, int cursorY) {
-		System.out.println(sessionID);
 		updateZone(sessionID, cursorX, cursorY);
 	}
 
@@ -60,14 +63,36 @@ public class ZoneCollection implements TUIOObserver {
 
 		if (cursurIsInsideAnExistingZone(cursorX, cursorY)) {
 			if (zoneDoesNotHaveAnActiveOwner(touchEventIsInsideThisZone)) {
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/animate/newowner");
+				myMessage.add((int)zoneName);
+				myMessage.add((int)tzones.get(touchEventIsInsideThisZone).getZoneName());
+				myMessage.add(cursorX);
+				myMessage.add(cursorY);
+				oscHandler.sendOSCMessage(myMessage);
+
 				tzones.get(touchEventIsInsideThisZone).setZoneName(zoneName);
-				sessionIDs = (long[]) PApplet.append(sessionIDs, zoneName);
+				sessionIDs.add(zoneName);
+				tzones.get(touchEventIsInsideThisZone).setX(cursorX); 			// then update position
+				tzones.get(touchEventIsInsideThisZone).setY(cursorY);
 			}
-		} else if (cursorY > parent.height - 100) {
+		} else if (cursorY > parent.height - 100 && sessionIDIsNotAlive(zoneName)) {
+			//Pack and send OSC
+			OscMessage myMessage = new OscMessage("/animate/new");
+			myMessage.add((int)zoneName);
+			myMessage.add(cursorX);
+			myMessage.add(cursorY);
+			oscHandler.sendOSCMessage(myMessage);
+
 			touchzone = new TouchZone(zoneName, cursorX, cursorY, width, height);
 			tzones.add(touchzone);
-			sessionIDs = (long[]) PApplet.append(sessionIDs, zoneName);
+			sessionIDs.add(zoneName);
 		} else if (cursorX < 100 && cursorY < 100) {
+			//Pack and send OSC
+			OscMessage myMessage = new OscMessage("/animate/killall");
+			myMessage.add(1);		
+			oscHandler.sendOSCMessage(myMessage);
+
 			KillAllActiveZonesAndIDs();
 		}
 	}
@@ -86,11 +111,17 @@ public class ZoneCollection implements TUIOObserver {
 	public void updateZone(long zoneName, int cursorX, int cursorY) {
 
 		for (int i = 0; i < tzones.size(); i++) {
-			System.out.println(tzones.get(i).getZoneName()+"  "+zoneName);
-			if (tzones.get(i).getZoneName() == zoneName) { 	// if the TUIO event is an owner of one of the Zones 	
-					tzones.get(i).setX(cursorX); 			// then update position
-					tzones.get(i).setY(cursorY);
-					break;
+			if (tzones.get(i).getZoneName() == zoneName) { 	// if the TUIO event is an owner of one of the Zones
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/animate/update");
+				myMessage.add((int)zoneName);
+				myMessage.add(cursorX);
+				myMessage.add(cursorY);		
+				oscHandler.sendOSCMessage(myMessage);
+
+				tzones.get(i).setX(cursorX); 			// then update position
+				tzones.get(i).setY(cursorY);
+				break;
 			}
 		}
 
@@ -103,19 +134,9 @@ public class ZoneCollection implements TUIOObserver {
 	 *            The sessionID for the zone as a string
 	 */
 	public void RemoveSessionID(long zoneName) {
-
-		for (int j = 0; j < sessionIDs.length; j++) {
-			if (sessionIDs[j] != 0) {
-				if (sessionIDs[j] == zoneName) { // remove zone
-					long[] front = (long[]) PApplet.subset(sessionIDs, 0, j);
-					long[] back = (long[]) PApplet.subset(sessionIDs, j + 1, (sessionIDs.length) - j - 1);
-					sessionIDs =  (long[]) PApplet.concat(front, back);
-					break;
-				}			
-			}
-		}
+		sessionIDs.remove(zoneName);
 	}
-	
+
 
 
 	/**
@@ -160,8 +181,8 @@ public class ZoneCollection implements TUIOObserver {
 
 		boolean noActiveOwner = true;
 
-		for (int j = 0; j < sessionIDs.length; j++) {
-			if (sessionIDs[j] == tzones.get(index).getZoneName()) {
+		for (int j = 0; j < sessionIDs.size(); j++) {
+			if (sessionIDs.get(j) == tzones.get(index).getZoneName()) {
 				noActiveOwner = false;
 				break;
 			}
@@ -170,13 +191,35 @@ public class ZoneCollection implements TUIOObserver {
 	}
 
 	/**
+	 * Determines if the current sessionID still has an active TUIO event as its
+	 * owner by comparing the sessionID passed in to the method against the list
+	 * of active touchZone IDs
+	 * 
+	 * @param sessionID
+	 *            The sessionID of the current TUIO event           
+	 * @return Whether owner is still alive or not
+	 */
+	private boolean sessionIDIsNotAlive(long sessionID) {
+
+		boolean noActiveOwner = true;
+
+		for (int j = 0; j < sessionIDs.size(); j++) {
+			if (sessionIDs.get(j) == sessionID) {
+				noActiveOwner = false;
+				break;
+			}
+		}
+		return noActiveOwner;
+	}
+
+
+
+	/**
 	 * Clears all members of both the touchZone collection and the active
 	 * sessionIDs Collection
 	 */
 	public void KillAllActiveZonesAndIDs() {
 		tzones.clear();
-		while (sessionIDs.length > 0) {
-		sessionIDs = (long[]) PApplet.shorten(sessionIDs);
-		}
+		sessionIDs.clear();
 	}
 }

@@ -23,6 +23,7 @@ public class TuioHandler implements TuioListener, TUIOSubject {
 	private int cursorX, cursorY;			// blob positions
 	private long sessionID;					// blob ID
 	private int lastTouchTime;             	// last time (in ms) from which a touch/click event happened
+	private int mouseSessionID;
 	private ArrayList<TUIOObserver> observers;
 
 
@@ -163,9 +164,23 @@ public class TuioHandler implements TuioListener, TUIOSubject {
 	 * Notify the Observers whenever we get a mouse event
 	 * 
 	 */
-	public void mouseEventsChanged(){
+	public void mouseEventsClicked(){
+		sessionID = mouseSessionID;
 		notifyObserverOfAddedCursor();
 		resetTouchTimer();
+	}
+	
+	public void mouseEventsDragged(){
+		sessionID = mouseSessionID;
+		notifyObserverOfUpdatedCursor();
+		resetTouchTimer();
+	}
+	
+	public void mouseEventsReleased(){
+		sessionID = mouseSessionID;
+		notifyObserverOfUpdatedCursor();
+		resetTouchTimer();
+		mouseSessionID++;
 	}
 
 	/**
@@ -222,11 +237,5 @@ public class TuioHandler implements TuioListener, TUIOSubject {
 	public long getSessionID() {
 		return sessionID;
 	}
-
-
-
-
-
-
 
 }

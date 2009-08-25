@@ -14,7 +14,7 @@ public class DrawZoneRectangles {
 
 	public void displayAllAcitiveRectangles() {
 		for (int x = 0; x < zoneCollection.tzones.size(); x++) {
-			parent.noFill();
+			parent.fill(255, 0, 0, 100);
 			parent.stroke(0);
 			parent.strokeWeight(10);
 			parent.rectMode(PConstants.CENTER);

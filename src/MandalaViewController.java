@@ -24,21 +24,21 @@ public class MandalaViewController {
 	public float grow;
 	public float largeCircleStroke;
 
-	public MandalaViewController(TuioHandler tuioHandler, PApplet parent, TextViewController textViewController, PGraphics pg){
+	public MandalaViewController(TuioHandler tuioHandler, PApplet parent, TextViewController textViewController, PGraphics pg, OSCHandler oscHandler){
 		this.tuioHandler = tuioHandler;
 		this.parent = parent;
 		this.pg = pg;
-		zoneCollection = new ZoneCollection(parent, tuioHandler);
+		zoneCollection = new ZoneCollection(parent, tuioHandler, oscHandler);
 		drawZoneRectangles = new DrawZoneRectangles(parent, zoneCollection);
 		largeCircleStroke = parent.height/37;
 		mandalaFont = this.parent.loadFont("AvantGuard-30.vlw");
-		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent);
+		mandalaNodeCenter = new MandalaNodeCenter(this.tuioHandler, this, parent, oscHandler);
 		explodingText = new ExplodingText(pg, this.parent, textViewController);
 		mandalaNodeCenter.setFadeColor(100, 1, 0, 0, 0, 0, 100, 1);
 		mandalaNodeCenter.setNodeStoryName("the story of being invisible");
 		mandalaNodeList = new MandalaNode[12]; //TODO fix to number of nodes
 		for(int i = 0; i < 12; i++){
-			mandalaNodeList[i] = new MandalaNode(this.tuioHandler, this, parent);
+			mandalaNodeList[i] = new MandalaNode(this.tuioHandler, this, parent, oscHandler);
 			mandalaNodeList[i].setNodePosition(i);
 		}
 		mandalaNodeList[0].setFadeColor(100, 1, 180, 0, 100, 1, 100, 1);
@@ -127,30 +127,33 @@ public class MandalaViewController {
 		parent.frameRate(120);
 		//parent.background(255); not needed because we draw background in the explode draw method
 		explodingText.drawXplode();
+
 		if(mandalaNodeCenter.isAnimationActive()){
 			drawZoneRectangles.displayAllAcitiveRectangles();
 		}
 		for(int i = 0; i < 12; i++){
 			if(mandalaNodeList[i].isAnimationActive()){
 				drawZoneRectangles.displayAllAcitiveRectangles();
-
 			}
 		}
+
 		if(mandalaNodeCenter.isShouldFade()){
 			mandalaNodeCenter.storyName();
 		}
 		for(int i = 0; i < 12; i++){
-		if(mandalaNodeList[i].isShouldFade()){
-			mandalaNodeList[i].storyName();
+			if(mandalaNodeList[i].isShouldFade()){
+				mandalaNodeList[i].storyName();
+			}
 		}
-		}
+
 		parent.translate(xCenter*scaleFactor, yCenter*scaleFactor);
 		parent.scale(scaleFactor*grow);
 		parent.fill(255);
 		parent.stroke(0);
 		parent.strokeWeight(largeCircleStroke);
 		parent.ellipse(0,0,mandalaNodeCenter.getCircleDiameter(),mandalaNodeCenter.getCircleDiameter());
-		mandalaNodeCenter.drawMandalaNode();
+
+		mandalaNodeCenter.drawMandalaNode();	
 		if(mandalaNodeCenter.isShouldFade()){
 			mandalaNodeCenter.fadeOverlay();
 		} else {
@@ -163,10 +166,9 @@ public class MandalaViewController {
 				scaleFactor -= .05;
 			}		
 		}
+
 		for(int i = 0; i < 12; i++){
 			mandalaNodeList[i].drawMandalaNode();
-		}
-		for(int i = 0; i < 12; i++){
 			if(mandalaNodeList[i].isShouldFade()){
 				mandalaNodeList[i].fadeOverlay();
 			} else {
@@ -178,7 +180,6 @@ public class MandalaViewController {
 				if(scaleFactor > .1){
 					scaleFactor -= .05;
 				} 
-				drawZoneRectangles.displayAllAcitiveRectangles();
 			}
 		}
 	}
