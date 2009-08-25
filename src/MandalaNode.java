@@ -1,16 +1,14 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
+import oscP5.OscMessage;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PFont;
 import processing.core.PGraphicsJava2D;
 
 /**
@@ -23,6 +21,7 @@ import processing.core.PGraphicsJava2D;
 public class MandalaNode implements TUIOObserver {
 
 	TUIOSubject tuioHandler;
+	OSCHandler oscHandler;
 	MandalaViewController mandalaViewController;
 	PApplet parent;
 	Graphics2D g2d;
@@ -77,9 +76,10 @@ public class MandalaNode implements TUIOObserver {
 	private boolean animationActive;
 
 	public MandalaNode(TUIOSubject tuioHandler,
-			MandalaViewController mandalaViewController, PApplet parent) {
+			MandalaViewController mandalaViewController, PApplet parent, OSCHandler oscHandler) {
 		// constructor
 		this.tuioHandler = tuioHandler;
+		this.oscHandler = oscHandler;
 		tuioHandler.registerObserver(this);
 		this.mandalaViewController = mandalaViewController;
 		this.parent = parent;
@@ -131,11 +131,21 @@ public class MandalaNode implements TUIOObserver {
 	// SET METHODS//////////////////////////////////////////////////
 	// /////////////////////////////////////////////////////////////
 	public void tuioCursorAdded(long sessionID, int cursorX, int cursorY) {
-		if (over(nodeCenterX, nodeCenterY, cursorX, cursorY)) {
+		if (over(nodeCenterX, nodeCenterY, cursorX, cursorY)) {			
 			resetNodeTouchTimer();
 			shouldFade = true;
 			if (triggerActive) {
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/mode");
+				myMessage.add(3);
+				oscHandler.sendOSCMessage(myMessage);
+				
 				animationActive = true;
+			} else {
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/mode");
+				myMessage.add(2);
+				oscHandler.sendOSCMessage(myMessage);
 			}
 		} else {
 			shouldFade = false;
@@ -149,7 +159,17 @@ public class MandalaNode implements TUIOObserver {
 			resetNodeTouchTimer();
 			shouldFade = true;
 			if (triggerActive) {
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/mode");
+				myMessage.add(3);
+				oscHandler.sendOSCMessage(myMessage);
+				
 				animationActive = true;
+			} else {
+				//Pack and send OSC
+				OscMessage myMessage = new OscMessage("/mode");
+				myMessage.add(2);
+				oscHandler.sendOSCMessage(myMessage);
 			}
 		} else {
 			shouldFade = false;
