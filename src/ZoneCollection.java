@@ -8,9 +8,6 @@ public class ZoneCollection implements TuioObserver {
 
 	private TouchZone touchzone;
 	private int touchEventIsInsideThisZone;
-	@SuppressWarnings("unused")
-	private TuioSubject tuioHandler;
-	OSCHandler oscHandler;
 
 	ArrayList<TouchZone> tzones;
 	ArrayList<Long> sessionIDs;
@@ -23,8 +20,6 @@ public class ZoneCollection implements TuioObserver {
 		this.ahTextContext = ahTextContext;
 		this.tzones = new ArrayList<TouchZone>();
 		this.sessionIDs = new ArrayList<Long>();
-		this.tuioHandler = ahTextContext.tuioHandler;
-		this.oscHandler = ahTextContext.oscHandler;
 	}
 
 	public void tuioCursorAdded(long sessionID, int cursorX, int cursorY) {
@@ -63,12 +58,12 @@ public class ZoneCollection implements TuioObserver {
 		if (cursurIsInsideAnExistingZone(cursorX, cursorY)) {
 			if (zoneDoesNotHaveAnActiveOwner(touchEventIsInsideThisZone)) {
 				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/animate/newowner");
-				myMessage.add((int)zoneName);
-				myMessage.add((int)tzones.get(touchEventIsInsideThisZone).getZoneName());
-				myMessage.add(cursorX);
-				myMessage.add(cursorY);
-				oscHandler.sendOSCMessage(myMessage);
+				ahTextContext.myMessage = new OscMessage("/animate/newowner");
+				ahTextContext.myMessage.add((int)zoneName);
+				ahTextContext.myMessage.add((int)tzones.get(touchEventIsInsideThisZone).getZoneName());
+				ahTextContext.myMessage.add(cursorX);
+				ahTextContext.myMessage.add(cursorY);
+				ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 
 				tzones.get(touchEventIsInsideThisZone).setZoneName(zoneName);
 				sessionIDs.add(zoneName);
@@ -77,20 +72,20 @@ public class ZoneCollection implements TuioObserver {
 			}
 		} else if (cursorY > ahTextContext.height - 100 && sessionIDIsNotAlive(zoneName)) {
 			//Pack and send OSC
-			OscMessage myMessage = new OscMessage("/animate/new");
-			myMessage.add((int)zoneName);
-			myMessage.add(cursorX);
-			myMessage.add(cursorY);
-			oscHandler.sendOSCMessage(myMessage);
+			ahTextContext.myMessage = new OscMessage("/animate/new");
+			ahTextContext.myMessage.add((int)zoneName);
+			ahTextContext.myMessage.add(cursorX);
+			ahTextContext.myMessage.add(cursorY);
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 
 			touchzone = new TouchZone(zoneName, cursorX, cursorY, width, height);
 			tzones.add(touchzone);
 			sessionIDs.add(zoneName);
 		} else if (cursorX < 100 && cursorY < 100) {
 			//Pack and send OSC
-			OscMessage myMessage = new OscMessage("/animate/killall");
-			myMessage.add(1);		
-			oscHandler.sendOSCMessage(myMessage);
+			ahTextContext.myMessage = new OscMessage("/animate/killall");
+			ahTextContext.myMessage.add(1);		
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 
 			KillAllActiveZonesAndIDs();
 		}
@@ -112,11 +107,11 @@ public class ZoneCollection implements TuioObserver {
 		for (int i = 0; i < tzones.size(); i++) {
 			if (tzones.get(i).getZoneName() == zoneName) { 	// if the TUIO event is an owner of one of the Zones
 				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/animate/update");
-				myMessage.add((int)zoneName);
-				myMessage.add(cursorX);
-				myMessage.add(cursorY);		
-				oscHandler.sendOSCMessage(myMessage);
+				ahTextContext.myMessage = new OscMessage("/animate/update");
+				ahTextContext.myMessage.add((int)zoneName);
+				ahTextContext.myMessage.add(cursorX);
+				ahTextContext.myMessage.add(cursorY);		
+				ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 
 				tzones.get(i).setX(cursorX); 			// then update position
 				tzones.get(i).setY(cursorY);
@@ -154,10 +149,8 @@ public class ZoneCollection implements TuioObserver {
 		boolean insideExistingZone = false;
 
 		for (int i = 0; i < tzones.size(); i++) {
-			if (Math.abs(tzones.get(i).getX() - cursorX) < tzones.get(i)
-					.getWidth()
-					&& Math.abs(tzones.get(i).getY() - cursorY) < tzones.get(i)
-					.getHeight()) {
+			if (Math.abs(tzones.get(i).getX() - cursorX) < tzones.get(i).getWidth() 
+					&& Math.abs(tzones.get(i).getY() - cursorY) < tzones.get(i).getHeight()) {
 				insideExistingZone = true;
 				touchEventIsInsideThisZone = i;
 				break;
