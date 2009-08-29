@@ -113,7 +113,7 @@ public class StateMandala implements StateInterface {
 	}
 	
 	public void displayGraphics() {
-		ahTextContext.frameRate(120);
+		ahTextContext.frameRate(25);
 		explodingText.drawXplode();
 		mandalaState.displayGraphics();
 	}

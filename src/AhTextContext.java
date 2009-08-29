@@ -23,6 +23,7 @@ public class AhTextContext extends PApplet implements TuioObserver {
 	StateInterface textRows;
 	StateInterface textRowsFade;
 	StateInterface mandala;
+
 	StateInterface stateInterface;
 
 	MediaDatabase mediaDatabase;
@@ -63,7 +64,7 @@ public class AhTextContext extends PApplet implements TuioObserver {
 		// add Full Screen support for OSX to hide top menu bar
 		fs = new FullScreen(this);
 		fs.setShortcutsEnabled(false);
-		//fs.enter();  //enable/disable Full Screen
+		fs.enter();  //enable/disable Full Screen
 
 		// load and set the font
 		ahTextFont = loadFont("Helvetica-24.vlw");
@@ -116,7 +117,7 @@ public class AhTextContext extends PApplet implements TuioObserver {
 		mediaDatabase = new MediaDatabase();
 		stringController = new StringController(numberOfRows, numberOfColumns, row, mediaDatabase);
 
-		notouchTime = 10 * 1000; 
+		notouchTime = 30 * 1000; 
 		switchBackToStart = true;
 
 		background(255);
@@ -193,6 +194,22 @@ public class AhTextContext extends PApplet implements TuioObserver {
 
 	private void resetMandalaState() {
 		stateInterface.reset();
+	}
+	
+	public void mousePressed(){
+		tuioHandler.setCursorX(mouseX);
+		tuioHandler.setCursorY(mouseY);
+		tuioHandler.mouseEventsClicked();
+	}
+	
+	public void mouseDragged(){
+		tuioHandler.setCursorX(mouseX);
+		tuioHandler.setCursorY(mouseY);
+		tuioHandler.mouseEventsDragged();
+	}
+	
+	public void mouseReleased(){
+		tuioHandler.mouseEventsReleased();
 	}
 
 
