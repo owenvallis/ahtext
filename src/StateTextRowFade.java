@@ -1,3 +1,4 @@
+import oscP5.OscMessage;
 import processing.core.PFont;
 import processing.core.PGraphics;
 import processing.core.PImage;
@@ -32,6 +33,9 @@ public class StateTextRowFade implements StateInterface {
 		}
 		ahTextContext.stringController.numStringToUse();
 		ahTextContext.stringController.fillRows();
+		ahTextContext.myMessage = new OscMessage("/mode");
+		ahTextContext.myMessage.add(3); // Grow Mode
+		ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 		ahTextContext.setState(ahTextContext.getMandalaState());
 	}
 
@@ -64,12 +68,15 @@ public class StateTextRowFade implements StateInterface {
 		
 		// if all Text Rows are finished fading then switch to Text Column Fall State
 		if (TextRows.alphaFlag == ahTextContext.numberOfRows) {
-			ahTextContext.setState(ahTextContext.getTextColumnsState());
 			for (int i = 0; i < ahTextContext.numberOfRows; i++) {
 				ahTextContext.row[i].resetValues();
 			}
 			ahTextContext.stringController.numStringToUse();
 			ahTextContext.stringController.fillRows();
+			ahTextContext.myMessage = new OscMessage("/mode");
+			ahTextContext.myMessage.add(0); // Fall Mode
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+			ahTextContext.setState(ahTextContext.getTextColumnsState());
 		}
 	}
 

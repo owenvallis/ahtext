@@ -1,3 +1,5 @@
+import oscP5.OscMessage;
+
 
 public class StateMandalaBackToMenu implements StateInterface {
 
@@ -48,13 +50,15 @@ public class StateMandalaBackToMenu implements StateInterface {
 		if(stateMandala.scaleFactor < 1.0){
 			stateMandala.scaleFactor += .05;
 		} else {
-			stateMandala.setState(stateMandala.getMenuState());
 			for(int i = 0; i < stateMandala.mandalaNodeList.length; i++){
 				ahTextContext.tuioHandler.registerObserver(stateMandala.mandalaNodeList[i]);
 				ahTextContext.tuioHandler.registerObserver(ahTextContext);
-				resetMandala();
 			}
-			
+			resetMandala();
+			ahTextContext.myMessage = new OscMessage("/mode");
+			ahTextContext.myMessage.add(4); // Menu Mode
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+			stateMandala.setState(stateMandala.getMenuState());
 		}
 	}
 	
@@ -68,8 +72,7 @@ public class StateMandalaBackToMenu implements StateInterface {
 	}
 
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		stateMandala.reset();		
 	}
 
 }
