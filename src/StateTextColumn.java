@@ -34,7 +34,7 @@ public class StateTextColumn implements StateInterface {
 			ahTextContext.column[i].resetValues();
 		}
 		ahTextContext.myMessage = new OscMessage("/mode");
-		ahTextContext.myMessage.add(1); // Row Mode 
+		ahTextContext.myMessage.add(3); // Grow Mode
 		ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 		ahTextContext.setState(ahTextContext.getMandalaState());
 	}
@@ -69,10 +69,13 @@ public class StateTextColumn implements StateInterface {
 
 		// if all Text Columns are finished filling then switch to Text Row State
 		if(TextColumns.flag == ahTextContext.numberOfColumns){
-			ahTextContext.setState(ahTextContext.getTextRowsState());
 			for (int i = 0; i < ahTextContext.numberOfColumns; i++) {
 				ahTextContext.column[i].resetValues();
 			}
+			ahTextContext.myMessage = new OscMessage("/mode");
+			ahTextContext.myMessage.add(1); // Row Mode
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+			ahTextContext.setState(ahTextContext.getTextRowsState());
 		}
 	}
 

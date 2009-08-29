@@ -142,6 +142,8 @@ public class StateMandala implements StateInterface {
 		explodingText.resetParticles();
 		ahTextContext.tuioHandler.removeAllObservers();
 		ahTextContext.tuioHandler.registerObserver(ahTextContext);
+		scaleFactor = (float)1.0;
+		zoneCollection.KillAllActiveZonesAndIDs();
 		for(int i = 0; i < mandalaNodeList.length; i++){
 			mandalaNodeList[i].setAnimationActive(false);
 			mandalaNodeList[i].setTriggerActive(false);

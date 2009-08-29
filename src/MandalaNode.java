@@ -137,16 +137,11 @@ public class MandalaNode implements TuioObserver {
 			shouldFade = true;
 			if (triggerActive) {
 				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/mode");
-				myMessage.add(3);
-				oscHandler.sendOSCMessage(myMessage);				
+				ahTextContext.myMessage = new OscMessage("/mode");
+				ahTextContext.myMessage.add(5); // Mandala Shrink to Corner Mode
+				ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);			
 				animationActive = true;
-			} else {
-				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/mode");
-				myMessage.add(2);
-				oscHandler.sendOSCMessage(myMessage);
-			}
+			} 
 		} else {
 			shouldFade = false;
 			resetNodeTouchTimer();
@@ -160,17 +155,12 @@ public class MandalaNode implements TuioObserver {
 			shouldFade = true;
 			if (triggerActive) {
 				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/mode");
-				myMessage.add(3);
-				oscHandler.sendOSCMessage(myMessage);
+				ahTextContext.myMessage = new OscMessage("/mode");
+				ahTextContext.myMessage.add(5); // Mandala Shrink to Corner Mode
+				ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 				
 				animationActive = true;
-			} else {
-				//Pack and send OSC
-				OscMessage myMessage = new OscMessage("/mode");
-				myMessage.add(2);
-				oscHandler.sendOSCMessage(myMessage);
-			}
+			} 
 		} else {
 			shouldFade = false;
 			resetNodeTouchTimer();
