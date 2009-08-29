@@ -14,7 +14,7 @@ public class DrawZoneRectangles {
 		this.zoneCollection = zoneCollection;
 		this.stateMandala = stateMandala;
 		
-		test = ahTextContext.loadImage("media/testStory.png");
+		
 		
 	}
 
@@ -33,6 +33,9 @@ public class DrawZoneRectangles {
 					zoneCollection.tzones.get(x).getWidth(), 
 					zoneCollection.tzones.get(x).getHeight());
 			//ahTextContext.imageMode(PConstants.CENTER);
+			String folder = "media/" + Integer.toString(stateMandala.currentNode) + "/" + Integer.toString(x%2) + ".png";
+			
+			test = ahTextContext.loadImage(folder);
 			ahTextContext.image(test, zoneCollection.tzones.get(x).getX(), zoneCollection.tzones.get(x).getY(),300,200);
 		}
 	}

@@ -1,9 +1,12 @@
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.IOException;
 
 import oscP5.OscMessage;
 
@@ -74,7 +77,7 @@ public class MandalaNode implements TuioObserver {
 	private int nodeTouchTime;
 	private boolean triggerActive;
 	private boolean animationActive;
-
+	
 	public MandalaNode(StateMandala stateMandala, AhTextContext ahTextContext) {
 		// constructor
 		// create main program controllers
@@ -89,10 +92,20 @@ public class MandalaNode implements TuioObserver {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		black = new Color(0, 0, 0);
-		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));// TODO figure a
-																// way to adjust
-																// font size
-		fontBig = g2d.getFont();
+		
+			try {
+				font = Font.createFont(Font.TRUETYPE_FONT, new File("data/AvantGuard.ttf"));
+			} catch (FontFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			g2d.setFont(font);
+
+		fontBig = g2d.getFont().deriveFont(Font.PLAIN, 42);
 		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
 
 		// text fields

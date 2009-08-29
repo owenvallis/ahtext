@@ -1,12 +1,5 @@
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Color;
-import java.awt.RenderingHints;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
-
 import processing.core.PApplet;
-import processing.core.PGraphicsJava2D;
+
 
 /**
  * Draws the center Mandala node, enables the fade behavior, and returns the state of the trigger
@@ -17,10 +10,7 @@ import processing.core.PGraphicsJava2D;
 public final class MandalaNodeCenter extends MandalaNode {
 	
 
-	Graphics2D g2d;
-	Color black;
-	Font font;
-	Font fontBig;
+
 	
 	private float[][] mandalaSpokeLineCoordinates = new float[12][4];
 
@@ -29,12 +19,6 @@ public final class MandalaNodeCenter extends MandalaNode {
 		super(stateMandala, ahTextContext);
 		super.setNodeCenterX(0);
 		super.setNodeCenterY(0);
-		g2d = ((PGraphicsJava2D) this.ahTextContext.g).g2;
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		black = new Color(0,0,0);
-		g2d.setFont(new Font("Avant Guard", Font.PLAIN, 42));//TODO figure a way to adjust font size
-		fontBig = g2d.getFont();
-		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
 		setTBarPositions();
 
 
@@ -64,13 +48,6 @@ public final class MandalaNodeCenter extends MandalaNode {
 
 		}
 	}
-	
-	public void storyName(){
-		g2d.setColor(black);
-		g2d.setFont(fontBig);
-		paintHorizontallyCenteredText(g2d, super.getNodeStoryName(), super.getTextXAlign(), 60);
-
-	}
 
 	/**
 	 * Draws the color fade overlay once a mandala is touched
@@ -88,7 +65,7 @@ public final class MandalaNodeCenter extends MandalaNode {
 			if(!super.isAnimationActive()){
 				g2d.setColor(black);
 				g2d.setFont(font);
-				paintHorizontallyCenteredText(g2d, "TOUCH", super.getNodeCenterX(), super.getNodeCenterY()+(ahTextContext.textWidth("G")/2));
+				super.paintHorizontallyCenteredText(g2d, "TOUCH", super.getNodeCenterX(), super.getNodeCenterY()+(ahTextContext.textWidth("G")/2));
 			}
 		}
 	}
@@ -109,13 +86,6 @@ public final class MandalaNodeCenter extends MandalaNode {
 		}
 	}
 	
-	  protected void paintHorizontallyCenteredText(Graphics2D g2, String s,
-		      float centerX, float baselineY) {
-		    FontRenderContext frc = g2.getFontRenderContext();
-		    Rectangle2D bounds = g2.getFont().getStringBounds(s, frc);
-		    float width = (float) bounds.getWidth();
-		    g2.drawString(s, centerX - width / 2, baselineY);
-		  }
 
 
 }
