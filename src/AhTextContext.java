@@ -23,7 +23,6 @@ public class AhTextContext extends PApplet implements TuioObserver {
 	StateInterface textRows;
 	StateInterface textRowsFade;
 	StateInterface mandala;
-
 	StateInterface stateInterface;
 
 	MediaDatabase mediaDatabase;
@@ -50,6 +49,7 @@ public class AhTextContext extends PApplet implements TuioObserver {
 	 * @param args
 	 */
 	public static void main(String args[]) {		
+		
 		PApplet.main(new String[] { "AhTextContext" });	
 	}
 
