@@ -1,3 +1,5 @@
+import oscP5.OscMessage;
+
 
 public class StateMandalaGrow implements StateInterface {
 	
@@ -48,13 +50,15 @@ public class StateMandalaGrow implements StateInterface {
 				ahTextContext.tuioHandler.registerObserver(stateMandala.mandalaNodeList[i]);
 				}
 			grow = 0;
+			ahTextContext.myMessage = new OscMessage("/mode");
+			ahTextContext.myMessage.add(4); // Menu Mode
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 			stateMandala.setState(stateMandala.getMenuState());
 		}
 	}
 
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		stateMandala.reset();		
 	}
 
 }

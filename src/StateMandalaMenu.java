@@ -1,3 +1,5 @@
+import oscP5.OscMessage;
+
 
 public class StateMandalaMenu implements StateInterface {
 
@@ -6,6 +8,7 @@ public class StateMandalaMenu implements StateInterface {
 	 */
 	StateMandala stateMandala;
 	AhTextContext ahTextContext;
+	private int iTemp = 999;
 
 
 	public StateMandalaMenu(StateMandala stateMandala, AhTextContext ahTextContext){
@@ -50,6 +53,12 @@ public class StateMandalaMenu implements StateInterface {
 		}
 		for(int i = 0; i < stateMandala.mandalaNodeList.length; i++){
 			if(stateMandala.mandalaNodeList[i].isShouldFade()){
+				if(iTemp != i){
+				ahTextContext.myMessage = new OscMessage("/mandala/noteid");
+				ahTextContext.myMessage.add(i); // Mandala Note ID
+				ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+				iTemp = i;
+				}
 				stateMandala.mandalaNodeList[i].fadeOverlay();
 			} else {
 				stateMandala.mandalaNodeList[i].resetColors();
@@ -57,11 +66,18 @@ public class StateMandalaMenu implements StateInterface {
 			if(stateMandala.mandalaNodeList[i].isAnimationActive()){
 				ahTextContext.tuioHandler.removeAllObservers();
 				ahTextContext.tuioHandler.registerObserver(stateMandala.zoneCollection);
-				ahTextContext.tuioHandler.registerObserver(ahTextContext);
+				ahTextContext.tuioHandler.registerObserver(ahTextContext); 
 				if(stateMandala.scaleFactor > .1){
 					stateMandala.scaleFactor -= .05;
 				} else {
 					stateMandala.currentNode = i;
+					ahTextContext.myMessage = new OscMessage("/animate/noteid");
+					ahTextContext.myMessage.add(i); // Animate Note ID
+					ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+					ahTextContext.myMessage = new OscMessage("/mode");
+					ahTextContext.myMessage.add(6); // Dragable Text Mode
+					ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
+					iTemp = stateMandala.mandalaNodeList.length;
 					stateMandala.setState(stateMandala.getStoryWindowState());
 				}
 			}
@@ -69,7 +85,6 @@ public class StateMandalaMenu implements StateInterface {
 	}
 
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		stateMandala.reset();		
 	}
 }

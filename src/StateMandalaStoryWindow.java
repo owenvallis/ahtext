@@ -1,3 +1,5 @@
+import oscP5.OscMessage;
+
 
 public class StateMandalaStoryWindow implements StateInterface {
 	
@@ -16,6 +18,9 @@ public class StateMandalaStoryWindow implements StateInterface {
 		if (cursorX < 100 && cursorY < 100) {
 			ahTextContext.tuioHandler.removeAllObservers();
 			ahTextContext.tuioHandler.registerObserver(ahTextContext);
+			ahTextContext.myMessage = new OscMessage("/mode");
+			ahTextContext.myMessage.add(7); // Mandala Back to Menu Mode
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 			stateMandala.setState(stateMandala.getBackToMenuState());
 		}
 	}
@@ -51,8 +56,7 @@ public class StateMandalaStoryWindow implements StateInterface {
 	}
 
 	public void reset() {
-		// TODO Auto-generated method stub
-		
+		stateMandala.reset();		
 	}
 
 }
