@@ -63,6 +63,7 @@ public class StateMandalaBackToMenu implements StateInterface {
 	}
 	
 	public void resetMandala() {
+		stateMandala.zoneCollection.KillAllActiveZonesAndIDs();
 		for(int i = 0; i < stateMandala.mandalaNodeList.length; i++){
 			stateMandala.mandalaNodeList[i].setAnimationActive(false);
 			stateMandala.mandalaNodeList[i].setTriggerActive(false);
