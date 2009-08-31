@@ -86,7 +86,12 @@ public class ZoneCollection implements TuioObserver {
 			ahTextContext.myMessage = new OscMessage("/animate/killall");
 			ahTextContext.myMessage.add(1);		
 			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
-
+			KillAllActiveZonesAndIDs();
+		} else if (cursorX > 1340 && cursorY < 100) {
+			//Pack and send OSC
+			ahTextContext.myMessage = new OscMessage("/animate/killall");
+			ahTextContext.myMessage.add(1);		
+			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 			KillAllActiveZonesAndIDs();
 		}
 	}
