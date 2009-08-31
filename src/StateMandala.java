@@ -23,6 +23,7 @@ public class StateMandala implements StateInterface {
 	public float circleDiameter;
 	public float largeCircleStroke;
 	public int currentNode;
+	int alpha;
 	
 	MandalaNode[] mandalaNodeList;		
 	
@@ -44,6 +45,7 @@ public class StateMandala implements StateInterface {
 		xCenter = this.ahTextContext.width/2;
 		yCenter = this.ahTextContext.height/2;
 		scaleFactor = (float)1.0;
+		alpha = 255;
 		
 		zoneCollection = new ZoneCollection(ahTextContext);
 		drawZoneRectangles = new DrawZoneRectangles(ahTextContext, zoneCollection, this);
@@ -143,6 +145,7 @@ public class StateMandala implements StateInterface {
 		ahTextContext.tuioHandler.removeAllObservers();
 		ahTextContext.tuioHandler.registerObserver(ahTextContext);
 		scaleFactor = (float)1.0;
+		alpha = 255;
 		zoneCollection.KillAllActiveZonesAndIDs();
 		for(int i = 0; i < mandalaNodeList.length; i++){
 			mandalaNodeList[i].setAnimationActive(false);
