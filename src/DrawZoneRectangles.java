@@ -7,6 +7,8 @@ public class DrawZoneRectangles {
 	ZoneCollection zoneCollection;
 	StateMandala stateMandala;
 	PImage storyText;
+	int storypngxSize;
+	int storypngySize;
 
 	public DrawZoneRectangles(AhTextContext ahTextContext, ZoneCollection zoneCollection, StateMandala stateMandala) {
 		// constructor
@@ -14,8 +16,8 @@ public class DrawZoneRectangles {
 		this.zoneCollection = zoneCollection;
 		this.stateMandala = stateMandala;
 		
-		
-		
+		storypngxSize = (int)(ahTextContext.width * 0.21);
+		storypngySize = (int)(ahTextContext.height * 0.22);
 	}
 
 	public void displayAllAcitiveRectangles() {
@@ -36,7 +38,7 @@ public class DrawZoneRectangles {
 			String folder = "media/" + Integer.toString(stateMandala.currentNode) + "/" + Integer.toString(x%2) + ".png";
 			
 			storyText = ahTextContext.loadImage(folder);
-			ahTextContext.image(storyText, (zoneCollection.tzones.get(x).getX()-150), (zoneCollection.tzones.get(x).getY()-100),300,200);
+			ahTextContext.image(storyText, (zoneCollection.tzones.get(x).getX() - (int)(storypngxSize * 0.5)), (zoneCollection.tzones.get(x).getY() - (int)(storypngySize * 0.5)),storypngxSize,storypngySize);
 		}
 	}
 }

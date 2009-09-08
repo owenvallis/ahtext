@@ -23,7 +23,7 @@ public class ZoneCollection implements TuioObserver {
 	}
 
 	public void tuioCursorAdded(long sessionID, int cursorX, int cursorY) {
-		createNewZone(sessionID, cursorX, cursorY, 300, 200);
+		createNewZone(sessionID, cursorX, cursorY, (int)(ahTextContext.width * 0.21), (int)(ahTextContext.height * 0.22));
 	}
 
 	public void tuioCursorUpdate(long sessionID, int cursorX, int cursorY) {

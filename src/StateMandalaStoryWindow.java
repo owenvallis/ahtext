@@ -52,12 +52,12 @@ public class StateMandalaStoryWindow implements StateInterface {
 		if(stateMandala.alpha > 0){
 			ahTextContext.tint(255,stateMandala.alpha);
 			ahTextContext.imageMode(PConstants.CENTER);
-			ahTextContext.image(directions, ahTextContext.width/2, ahTextContext.height/2);
+			ahTextContext.image(directions, ahTextContext.width/2, ahTextContext.height/2, (int)(ahTextContext.width * 0.48), (int)(ahTextContext.height * 0.36));
 			ahTextContext.tint(255,255);
 			ahTextContext.imageMode(PConstants.CORNER);
 			stateMandala.alpha -= 5;
 		}
-		ahTextContext.image(menuLabels, 0, 0);
+		ahTextContext.image(menuLabels, 0, 0, ahTextContext.width, (int)(ahTextContext.height * 0.11));
 		stateMandala.drawZoneRectangles.displayAllAcitiveRectangles();
 		ahTextContext.translate(stateMandala.xCenter*stateMandala.scaleFactor, stateMandala.yCenter*stateMandala.scaleFactor);
 		ahTextContext.scale(stateMandala.scaleFactor);
