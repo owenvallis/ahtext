@@ -81,13 +81,13 @@ public class ZoneCollection implements TuioObserver {
 			touchzone = new TouchZone(zoneName, cursorX, cursorY, width, height);
 			tzones.add(touchzone);
 			sessionIDs.add(zoneName);
-		} else if (cursorX < 100 && cursorY < 100) {
+		} else if (cursorX < (int)(ahTextContext.width * 0.07) && cursorY < (int)(ahTextContext.height * 0.11)) {
 			//Pack and send OSC
 			ahTextContext.myMessage = new OscMessage("/animate/killall");
 			ahTextContext.myMessage.add(1);		
 			ahTextContext.oscHandler.sendOSCMessage(ahTextContext.myMessage);
 			KillAllActiveZonesAndIDs();
-		} else if (cursorX > 1340 && cursorY < 100) {
+		} else if (cursorX > (int)(ahTextContext.width * 0.9) && cursorY < (int)(ahTextContext.height * 0.11)) {
 			//Pack and send OSC
 			ahTextContext.myMessage = new OscMessage("/animate/killall");
 			ahTextContext.myMessage.add(1);		

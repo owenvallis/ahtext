@@ -29,7 +29,6 @@ public class TextRows {
 	char[] randCharacterArray;
 	Random r = new Random();
 
-	TextDatabase txdb = new TextDatabase();
 
 	// sets the column position, and column width
 	TextRows(PApplet p, PGraphics pgraphics, int posX, float charBounds, float textHght, int clmns, PFont at) {
