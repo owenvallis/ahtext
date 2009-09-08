@@ -105,8 +105,8 @@ public class MandalaNode implements TuioObserver {
 			
 			g2d.setFont(font);
 
-		fontBig = g2d.getFont().deriveFont(Font.PLAIN, 42);
-		font = g2d.getFont().deriveFont(Font.BOLD, (float) 23.0);
+		fontBig = g2d.getFont().deriveFont(Font.PLAIN, (int)(ahTextContext.width * 0.035));
+		font = g2d.getFont().deriveFont(Font.BOLD, (int)(ahTextContext.width * 0.016));
 
 		// text fields
 		textXAlign = ahTextContext.width / 2;

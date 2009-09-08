@@ -42,27 +42,13 @@ public class ExplodingText {
 		for(int y = 0; y < numberOfRows; y++){
 			for(int x = 0; x < numberOfColumns; x++){
 				pg.fill(0);
-				//characters[y][x]  = (char)32;
 				characters[y][x]  = (char)((int)ahTextContext.random(65, 88));
-				particles[y][x] = physics.makeParticle( (float)1.0, (float)(x*boundWidth-(boundWidth*.25)), y*boundHeight, 0 );
+				particles[y][x] = physics.makeParticle( (float)1.0, (float)(x*boundWidth), y*boundHeight, 0 );
 				if(x > 0){
 					physics.makeAttraction( particles[y][x-1], particles[y][x], 10000 * ahTextContext.random(1), 10 );
 				}
 			}
 		}
-
-		/*	
-		for(int x = 0; x < numberOfRows; x++){
-			for(int y = 0; y < numberOfColumns; y++){
-				//pg.fill(parent.random(255));
-				pg.fill(0);
-				characters[x][y]  = (char)((int)parent.random(65, 88));
-				particles[x][y] = physics.makeParticle( (float)1.0, parent.random( 0, pg.width ), parent.random( 0, pg.height ), 0 );
-				if(y > 0){
-					physics.makeAttraction( particles[x][y-1], particles[x][y], 2000, 10 );
-				}
-			}
-		}*/
 		 
 	}
 
@@ -106,7 +92,7 @@ public class ExplodingText {
 			for(int x = 0; x < numberOfColumns; x++){
 				pg.fill(0);
 				characters[y][x]  = (char)((int)ahTextContext.random(65, 88));
-				particles[y][x] = physics.makeParticle( (float)1.0, (float)(x*boundWidth-(boundWidth*.25)), y*boundHeight, 0 );
+				particles[y][x] = physics.makeParticle( (float)1.0, (float)(x*boundWidth), y*boundHeight, 0 );
 				if(x > 0){
 					physics.makeAttraction( particles[y][x-1], particles[y][x], 10000 * ahTextContext.random(1), 10 );
 				}
