@@ -42,8 +42,8 @@ public class StringController {
 		
 		while (totalNumOfChars > 0) {
 			x = (r.nextInt(mediaDatabase.mediaListOuter.size()));
-			totalNumOfChars = totalNumOfChars - ((String) mediaDatabase.mediaListOuter.get(x).get(0)).length();
-			result.add(((String) mediaDatabase.mediaListOuter.get(x).get(0)).split(" "));
+			totalNumOfChars = totalNumOfChars - ((String) mediaDatabase.mediaListOuter.get(x)).length();
+			result.add(((String) mediaDatabase.mediaListOuter.get(x)).split(" "));
 		}
 
 	}

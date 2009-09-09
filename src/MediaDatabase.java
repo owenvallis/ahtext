@@ -10,24 +10,21 @@ final public class MediaDatabase {
 
 	// <------------------Setup Class IVars------------------>//
 	//
-	ArrayList<ArrayList<Object>> mediaListOuter = new ArrayList<ArrayList<Object>>(); // 2D ArrayList to hold data "structs"
-
+	ArrayList<String> mediaListOuter = new ArrayList<String>(); // 2D ArrayList to hold data "structs"
 	FilenameFilter filterTxt = new TXTFilter(); //data filter types
-	FilenameFilter filterWav = new WAVFilter();
-	
 	File directory = new File("data/media"); //set data folder path
+	File[] files = directory.listFiles(filterTxt); //create an array of filtered files from the data folder
 
 	// <------------------Setup Class Methods------------------>//
 	////
 	
 	MediaDatabase(){
-		readTextFiles();		
+		readTextFiles();
+		System.out.println(directory.listFiles(filterTxt));
 	}
 	
 	void readTextFiles() {
 		int x = 0;
-
-		File[] files = directory.listFiles(filterTxt); //create an array of filtered files from the data folder
 
 		//Puts the strings into the first position of sequential ArrayList Elements
 		for (File f : files) {
@@ -47,8 +44,7 @@ final public class MediaDatabase {
 				m = p.matcher(inputText);
 				String str = m.replaceAll(" ");
 
-				mediaListOuter.add(new ArrayList<Object>());
-				mediaListOuter.get(x).add(str);
+				mediaListOuter.add(str);
 				x++;
 
 				reader.close();
@@ -58,19 +54,6 @@ final public class MediaDatabase {
 		}
 	}
 
-	void readAudioFiles() {
-
-		File[] files = directory.listFiles(filterWav);
-
-		for (File f : files) {
-
-			mediaListOuter.add(new ArrayList<Object>());
-			mediaListOuter.get(1).add(f);
-
-		}
-
-	}
-
 }
 
 class TXTFilter implements FilenameFilter {
@@ -78,10 +61,4 @@ class TXTFilter implements FilenameFilter {
 		return (name.endsWith(".txt"));
 	}
 
-}
-
-class WAVFilter implements FilenameFilter {
-	public boolean accept(File dir, String name) {
-		return (name.endsWith(".wav"));
-	}
 }
